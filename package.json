@@ -1,0 +1,40 @@
+{
+  "name": "carina",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "concurrently \"nodemon server.js\" \"cd client && npm start\"",
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "dependencies": {
+    "@babel/core": "^7.10.4",
+    "body-parser": "^1.19.0",
+    "concurrently": "^5.2.0",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "morgan": "^1.9.1",
+    "mysql": "^2.18.1",
+    "node": "^14.4.0",
+    "node-cron": "^2.0.3"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.10.4",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-react-hooks": "^2.5.0",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}
