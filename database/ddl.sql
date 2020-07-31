@@ -8,6 +8,7 @@ create table users (
     user_id VARCHAR(124),
     email VARCHAR(124),
     fullname VARCHAR(124),
+    secret VARCHAR(124),
     PRIMARY KEY (id)
 );
 
@@ -175,8 +176,37 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS createUser;
+DELIMITER //
+CREATE PROCEDURE createUser(
+	IN aUserId VARCHAR(124),
+    IN aEmail VARCHAR(124),
+    IN aFullname VARCHAR(124),
+    IN aSecret VARCHAR(124)
+)
+BEGIN
+	INSERT INTO users (user_id, email, fullname, secret)
+        VALUES (aUserId, aEmail,aFullname, aSecret);
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS signIn;
+DELIMITER //
+CREATE PROCEDURE signIn(
+	IN aEmail VARCHAR(124)
+)
+BEGIN
+	IF EXISTS(SELECT * FROM users WHERE email=aEmail) 
+    THEN
+		SELECT id, secret,email, fullname FROM users WHERE email=aEmail;
+    END IF;
+END //
+DELIMITER ;
+call signIn("janhelix@gmail.com");
+select * from users;
+
 SELECT @@global.time_zone, @@session.time_zone;
 select current_timestamp();
 select * from todos;
-call incPomo(1, 510);
+delete from users;
 select * from pomodoros_done;

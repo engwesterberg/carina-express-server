@@ -1,10 +1,21 @@
-var express = require('express');
-var router = express.Router();
-
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const db = require('./database/db');
+const carinaParser = require('./CarinaParser');
+
+const dbFormat = 'YYYY-MM-DD HH:mm:ss';
+
+const dbDate = moment => {
+  if (process.env.NODE_ENV !== 'production') {
+    return moment.format(dbFormat);
+  }
+  return moment.toISOString().slice(0, 19).replace('T', ' ');
+};
 
 router.get('/api/apitest', (req, res) => {
-  let bajs = { msg: 'success' };
+  let bajs = {msg: 'success'};
 
   res.send(bajs);
 });
@@ -32,14 +43,13 @@ router.get('/api/todos/:id', async (req, res) => {
 router.get('/api/todosfromlist/', async (req, res) => {
   try {
     let results = await db.fromlist(req.body.user_id, req.body.list_id);
-
     res.json(results);
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
   }
 });
-
+//google user, needs refactoring
 router.post('/api/user/', async (req, res) => {
   //res.json('hello mutter')
   try {
@@ -51,17 +61,60 @@ router.post('/api/user/', async (req, res) => {
   }
 });
 
+router.post('/api/createuser/', async (req, res) => {
+  let encrPass;
+  bcrypt.genSalt(10, async function (err, salt) {
+    bcrypt.hash(req.body.secret, 10, async function (err, hash) {
+      encrPass = hash;
+      console.log(encrPass);
+      try {
+        console.log(encrPass);
+        let results = await db.createuser(
+          req.body.user_id,
+          req.body.email,
+          req.body.fullname,
+          encrPass,
+        );
+        res.json(results);
+      } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+      }
+    });
+  });
+});
+
+router.post('/api/signin/', async (req, res) => {
+  try {
+    let results = await db.signin(req.body.email);
+    bcrypt.compare(req.body.secret, results[0][0].secret, function (
+      err,
+      result,
+    ) {
+      console.log(result);
+      if (result) res.json(results);
+      else res.sendStatus(500);
+    });
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
 router.post('/api/todo/', async (req, res) => {
+  console.log(req);
+  let parsed = carinaParser(req.body.query);
+  console.log(parsed);
   try {
     let results = await db.addtodo(
       req.body.user_id,
       req.body.list_id,
-      req.body.title,
-      req.body.note,
-      req.body.due_date,
-      req.body.has_time,
-      req.body.pomo_estimate,
-      req.body.recurring
+      parsed.newQuery,
+      null,
+      parsed.due_date && dbDate(parsed.due_date),
+      parsed.hasTime,
+      parsed.pomo_estimate,
+      parsed.recurring,
     );
     res.json(results);
   } catch (e) {
@@ -83,7 +136,7 @@ router.put('/api/todo/', async (req, res) => {
       req.body.state,
       req.body.due_date,
       req.body.has_time,
-      req.body.recurring
+      req.body.recurring,
     );
     res.json(results);
   } catch (e) {
@@ -114,7 +167,11 @@ router.post('/api/list/', async (req, res) => {
 
 router.post('/api/shared_list/', async (req, res) => {
   try {
-    let results = await db.shareList(req.body.list_id, req.body.shared_with, req.body.owner_id);
+    let results = await db.shareList(
+      req.body.list_id,
+      req.body.shared_with,
+      req.body.owner_id,
+    );
     res.json(results);
   } catch (e) {
     console.error(e);

@@ -31,13 +31,17 @@ const pool =
 
 let carinadb = {};
 
-carinadb.userid = (user_id) => {
+carinadb.userid = user_id => {
   return new Promise((resolve, reject) => {
-    pool.query(`SELECT id FROM users WHERE user_id=?`, user_id, (err, results) => {
-      if (err) return reject(err);
+    pool.query(
+      `SELECT id FROM users WHERE user_id=?`,
+      user_id,
+      (err, results) => {
+        if (err) return reject(err);
 
-      return resolve(results);
-    });
+        return resolve(results);
+      },
+    );
   });
 };
 
@@ -51,7 +55,7 @@ carinadb.todos = () => {
   });
 };
 
-carinadb.foruser = (user_id) => {
+carinadb.foruser = user_id => {
   return new Promise((resolve, reject) => {
     pool.query(
       `SELECT * FROM todos WHERE user_id = ? OR 
@@ -63,7 +67,7 @@ carinadb.foruser = (user_id) => {
         if (err) return reject(err);
 
         return resolve(results);
-      }
+      },
     );
   });
 };
@@ -77,14 +81,38 @@ carinadb.fromlist = (user_id, list_id) => {
         if (err) return reject(err);
 
         return resolve(results);
-      }
+      },
+    );
+  });
+};
+//For google user
+carinadb.adduser = (id, email, name) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`call addUser(?, ?, ?)`, [id, email, name], (err, results) => {
+      if (err) return reject(err);
+
+      return resolve(results);
+    });
+  });
+};
+
+carinadb.createuser = (userId, email, fullname, secret) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `call createUser(?, ?, ?, ?)`,
+      [userId, email, fullname, secret],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
     );
   });
 };
 
-carinadb.adduser = (id, email, name) => {
+carinadb.signin = email => {
   return new Promise((resolve, reject) => {
-    pool.query(`call addUser(?, ?, ?)`, [id, email, name], (err, results) => {
+    pool.query(`call signIn(?)`, [email], (err, results) => {
       if (err) return reject(err);
 
       return resolve(results);
@@ -100,17 +128,26 @@ carinadb.addtodo = (
   due_date,
   has_time,
   pomo_estimate,
-  recurring
+  recurring,
 ) => {
   return new Promise((resolve, reject) => {
     pool.query(
       `call addTodo(?, ?, ?, ?,?, ?, ?,?);`,
-      [user_id, list_id, title, note, due_date, has_time, pomo_estimate, recurring],
+      [
+        user_id,
+        list_id,
+        title,
+        note,
+        due_date,
+        has_time,
+        pomo_estimate,
+        recurring,
+      ],
       (err, results) => {
         if (err) return reject(err);
 
         return resolve(results);
-      }
+      },
     );
   });
 };
@@ -125,7 +162,7 @@ carinadb.updateTodo = (
   state,
   due_date,
   has_time,
-  recurring
+  recurring,
 ) => {
   return new Promise((resolve, reject) => {
     pool.query(
@@ -143,16 +180,27 @@ carinadb.updateTodo = (
     WHERE 
       id=?
         ;`,
-      [list_id, title, note, pomo_estimate, pomo_done, state, due_date, has_time, recurring, id],
+      [
+        list_id,
+        title,
+        note,
+        pomo_estimate,
+        pomo_done,
+        state,
+        due_date,
+        has_time,
+        recurring,
+        id,
+      ],
       (err, results) => {
         if (err) return reject(err);
         return resolve(results);
-      }
+      },
     );
   });
 };
 
-carinadb.getLists = (user_id) => {
+carinadb.getLists = user_id => {
   return new Promise((resolve, reject) => {
     pool.query(`call getLists(?);`, [user_id], (err, results) => {
       if (err) return reject(err);
@@ -170,17 +218,21 @@ carinadb.createList = (user_id, title) => {
       (err, results) => {
         if (err) return reject(err);
         return resolve(results);
-      }
+      },
     );
   });
 };
 
 carinadb.shareList = (list_id, shared_with, owner_id) => {
   return new Promise((resolve, reject) => {
-    pool.query(`CALL shareList(?,?,?)`, [list_id, shared_with, owner_id], (err, results) => {
-      if (err) return reject(err);
-      return resolve(results);
-    });
+    pool.query(
+      `CALL shareList(?,?,?)`,
+      [list_id, shared_with, owner_id],
+      (err, results) => {
+        if (err) return reject(err);
+        return resolve(results);
+      },
+    );
   });
 };
 
@@ -197,12 +249,12 @@ carinadb.renameList = (list_id, new_title) => {
       (err, results) => {
         if (err) return reject(err);
         return resolve(results);
-      }
+      },
     );
   });
 };
 
-carinadb.deleteList = (list_id) => {
+carinadb.deleteList = list_id => {
   return new Promise((resolve, reject) => {
     pool.query(`CALL removeList(?);`, [list_id], (err, results) => {
       if (err) return reject(err);
@@ -211,22 +263,30 @@ carinadb.deleteList = (list_id) => {
   });
 };
 
-carinadb.setListNull = (list_id) => {
+carinadb.setListNull = list_id => {
   return new Promise((resolve, reject) => {
-    pool.query(`UPDATE todos SET list_id = null WHERE list_id = ?;;`, [list_id], (err, results) => {
-      if (err) return reject(err);
-      return resolve(results);
-    });
+    pool.query(
+      `UPDATE todos SET list_id = null WHERE list_id = ?;;`,
+      [list_id],
+      (err, results) => {
+        if (err) return reject(err);
+        return resolve(results);
+      },
+    );
   });
 };
 
-carinadb.deleteTodo = (todo_id) => {
+carinadb.deleteTodo = todo_id => {
   return new Promise((resolve, reject) => {
-    pool.query(`UPDATE todos SET state=2 WHERE id=?;`, todo_id, (err, results) => {
-      if (err) return reject(err);
+    pool.query(
+      `UPDATE todos SET state=2 WHERE id=?;`,
+      todo_id,
+      (err, results) => {
+        if (err) return reject(err);
 
-      return resolve(results);
-    });
+        return resolve(results);
+      },
+    );
   });
 };
 
