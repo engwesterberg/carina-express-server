@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const moment = require('moment');
 const saltRounds = 10;
 const db = require('./database/db');
 const carinaParser = require('./CarinaParser');
-
 const dbFormat = 'YYYY-MM-DD HH:mm:ss';
 
 const dbDate = moment => {
@@ -102,9 +102,7 @@ router.post('/api/signin/', async (req, res) => {
 });
 
 router.post('/api/todo/', async (req, res) => {
-  console.log(req);
   let parsed = carinaParser(req.body.query);
-  console.log(parsed);
   try {
     let results = await db.addtodo(
       req.body.user_id,
@@ -115,6 +113,25 @@ router.post('/api/todo/', async (req, res) => {
       parsed.hasTime,
       parsed.pomo_estimate,
       parsed.recurring,
+    );
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.post('/api/todocopy/', async (req, res) => {
+  try {
+    let results = await db.addtodo(
+      req.body.user_id,
+      req.body.list_id,
+      req.body.title,
+      req.body.note,
+      req.body.due_date && dbDate(moment(req.body.due_date)),
+      req.body.hasTime,
+      req.body.pomo_estimate,
+      req.body.recurring,
     );
     res.json(results);
   } catch (e) {

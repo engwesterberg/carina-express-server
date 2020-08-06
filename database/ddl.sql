@@ -208,5 +208,8 @@ select * from users;
 SELECT @@global.time_zone, @@session.time_zone;
 select current_timestamp();
 select * from todos;
+delete from todos;
+select * from lists;
+select * from users;
 delete from users;
 select * from pomodoros_done;
