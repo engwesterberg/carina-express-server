@@ -176,7 +176,7 @@ function carinaParser(query) {
   attributes.due_date = newDate;
   attributes.pomo_estimate = Number(pomo_estimate);
   attributes.hasTime = hasTime;
-  attributes.recurring = Number(repeat_every);
+  attributes.recurring =  repeat_every ? Number(repeat_every) : null;
   attributes.newQuery = attributes.newQuery.trim();
 
   console.log(attributes);
