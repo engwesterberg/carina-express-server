@@ -66,9 +66,7 @@ router.post('/api/createuser/', async (req, res) => {
   bcrypt.genSalt(10, async function (err, salt) {
     bcrypt.hash(req.body.secret, 10, async function (err, hash) {
       encrPass = hash;
-      console.log(encrPass);
       try {
-        console.log(encrPass);
         let results = await db.createuser(
           req.body.user_id,
           req.body.email,
@@ -91,7 +89,6 @@ router.post('/api/signin/', async (req, res) => {
       err,
       result,
     ) {
-      console.log(result);
       if (result) res.json(results);
       else res.sendStatus(500);
     });
@@ -109,7 +106,7 @@ router.post('/api/todo/', async (req, res) => {
       req.body.list_id,
       parsed.newQuery,
       null,
-      parsed.due_date && dbDate(parsed.due_date),
+      parsed.due_date && dbDate(moment(parsed.due_date)),
       parsed.hasTime,
       parsed.pomo_estimate,
       parsed.recurring,
@@ -142,7 +139,6 @@ router.post('/api/todocopy/', async (req, res) => {
 
 router.put('/api/todo/', async (req, res) => {
   try {
-    console.log(req.body);
     let results = await db.updateTodo(
       req.body.id,
       req.body.list_id,

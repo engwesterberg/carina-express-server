@@ -1,4 +1,5 @@
 const moment = require('moment');
+const chrono = require('chrono-node');
 const today = [' td', 'td ', 'today'];
 const tomorrow = [' tm(?![a-z])', 'tomorrow'];
 const inDays = 'in [0-9]* day[a-z]*';
@@ -34,7 +35,6 @@ const times = ['[0-9]+(.|:)+[0-9]+', '[0-9]+(am|pm)+'];
 const defaultHour = 20;
 
 function carinaParser(query) {
-  console.log('in parser');
   let attributes = {};
   let newQuery = query;
   let newDate,
@@ -53,67 +53,6 @@ function carinaParser(query) {
     }
   });
 
-  today.map(item => {
-    if (query.match(RegExp(item, 'i'))) {
-      newDate = moment().hours(defaultHour).minutes(0).seconds(0);
-      newQuery = newQuery.replace(RegExp(item, 'i'), '');
-    }
-  });
-  //11am -r 1fungerar inte
-  tomorrow.map(item => {
-    if (query.match(RegExp(item, 'i'))) {
-      newDate = moment().add(1, 'd').hours(defaultHour).minutes(59).seconds(0);
-      newQuery = newQuery.replace(RegExp(item, 'i'), '');
-    }
-  });
-
-  days.map(day => {
-    if (query.match(RegExp(day, 'i'))) {
-      newDate = moment().day(day.charAt(0).toUpperCase() + day.slice(1));
-      if (newDate < moment().hours(0)) {
-        newDate.add(7, 'days');
-      }
-      newQuery = newQuery.replace(RegExp(`(on)* ${day}`, 'i'), '');
-    }
-  });
-
-  everyDay.map(day => {
-    temp = query.match(RegExp(day, 'i'));
-    if (temp) {
-      repeat_every = 1;
-      newQuery = newQuery.replace(temp[0], '');
-    }
-  });
-
-  months.map((month, index) => {
-    if (query.match(RegExp(`in ${month}[a-z]*`, 'i'))) {
-      temp = String(query.match(`in ${month}`));
-      temp = temp.replace('in ', '');
-      newDate = moment().month(index).date(1);
-      if (index < moment().month()) newDate = newDate.add(1, 'y');
-      newQuery = newQuery.replace(RegExp(`in ${month}[a-z]*`, 'i'), '');
-    }
-  });
-
-  //june 20
-  months.map((month, index) => {
-    temp = newQuery.match(
-      RegExp(
-        `(([0-9]+[a-z]{0,2} ${month}[a-z]*)|(${month}[a-z]* [0-9]+[a-z]{0,2}))+`,
-        'i',
-      ),
-    );
-    if (temp) {
-      console.log('temp:', temp);
-      newQuery = newQuery.replace(temp[0], '');
-      let day = temp[0].match('[0-9]+');
-      newDate = moment().date(day[0]).month(index);
-      if (moment().month() > index) newDate.add(1, 'y');
-      else if (moment().month() == index && moment().date() > newDate.date())
-        newDate.add(1, 'y');
-    }
-  });
-
   pomo.map(item => {
     if (query.includes(item)) {
       temp = String(query.match(new RegExp(item + '[0-9]+')));
@@ -123,51 +62,38 @@ function carinaParser(query) {
     }
   });
 
-  if (query.match(RegExp(inDays, 'i'))) {
-    let regmatutt = query.match(RegExp(inDays, 'i'));
-    let days = Number(String(regmatutt).match(RegExp('[0-9]+')));
-    newDate = moment().add(days, 'd').hour(defaultHour).minute(0);
-    newQuery = newQuery.replace(regmatutt, '');
+  let results = chrono.parse(newQuery);
+  if (results.length > 0) {
+    let known = results[0].start.knownValues;
+    let implied = results[0].start.impliedValues;
+    let year = known.year || implied.year;
+    let month = known.month || implied.month;
+    let day = known.day || implied.day;
+    let hour = known.hour || implied.hour;
+    let minute = known.minute || implied.minute;
+
+    let date = moment().set({
+      year: year,
+      month: month - 1,
+      date: day,
+      hour: hour,
+      minute: minute,
+    });
+
+    if (known.hour) {
+      hasTime = true;
+    }
+
+    newDate = date.format();
+    newQuery = newQuery.replace(results[0].text, '');
+    console.log('datum: ', newDate);
+    console.log('year: ', year);
+    console.log('month: ', month);
+    console.log('day: ', day);
+    console.log('hour: ', hour);
+    console.log('minute: ', minute);
   }
 
-  next.map(time => {
-    if (query.match(RegExp(`next ${time}`, 'i'))) {
-      switch (time) {
-        case 'week':
-          newDate = moment().day('Monday');
-          if (newDate.date() < moment().date()) newDate.add(7, 'd');
-          break;
-        case 'month':
-          newDate = moment().add(1, 'month').date(1);
-          break;
-        case 'year':
-          newDate = moment().add(1, 'year').month(0).date(1);
-          break;
-      }
-      newQuery = newQuery.replace(query.match(`next ${time}`, 'i'), '');
-    }
-  });
-
-  times.map((time, index) => {
-    let reg = newQuery.match(RegExp(time, 'i'));
-    let t = moment();
-    console.log('lets go');
-    if (reg) {
-      if (index === 0) {
-        t.hours(reg[0].split(/:|\./)[0]);
-        t.minutes(reg[0].split(/:|\./)[1]);
-      } else if (index === 1) {
-        let hour = Number(reg[0].match('[0-9]+')[0]);
-        hour = reg[0].match(RegExp('pm', 'i')) ? hour + 12 : hour;
-        t.hours(hour).minutes(0);
-      }
-      newQuery = newQuery.replace(RegExp(`(at )*${reg[0]}`), '');
-      newTime = t;
-      newDate = newDate == null ? moment().hours(defaultHour) : newDate;
-    }
-  });
-
-  //
   attributes.newQuery = newQuery;
   if (newTime) {
     newDate = newDate.set({hour: newTime.hour(), minute: newTime.minute()});
@@ -176,10 +102,9 @@ function carinaParser(query) {
   attributes.due_date = newDate;
   attributes.pomo_estimate = Number(pomo_estimate);
   attributes.hasTime = hasTime;
-  attributes.recurring =  repeat_every ? Number(repeat_every) : null;
+  attributes.recurring = repeat_every ? Number(repeat_every) : null;
   attributes.newQuery = attributes.newQuery.trim();
 
-  console.log(attributes);
   return attributes;
 }
 

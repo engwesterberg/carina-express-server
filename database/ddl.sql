@@ -212,4 +212,5 @@ delete from todos;
 select * from lists;
 select * from users;
 delete from users;
-select * from pomodoros_done;
+update todos set list_id=7 where id=134;
+update todos set user_id=14 where id=172;
