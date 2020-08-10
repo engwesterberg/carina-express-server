@@ -1,35 +1,7 @@
 const moment = require('moment');
 const chrono = require('chrono-node');
-const today = [' td', 'td ', 'today'];
-const tomorrow = [' tm(?![a-z])', 'tomorrow'];
-const inDays = 'in [0-9]* day[a-z]*';
 const pomo = [' -p', ' -p ', '-p '];
 const repeat = ['-r ', ' -r'];
-const months = [
-  'jan',
-  'feb',
-  'mar',
-  'apr',
-  'may',
-  'jun',
-  'jul',
-  'aug',
-  'sep',
-  'oct',
-  'nov',
-  'dec',
-];
-
-const next = ['week', 'month', 'year'];
-const days = [
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
-  'sunday',
-];
 const everyDay = [' daily', ' every day'];
 const times = ['[0-9]+(.|:)+[0-9]+', '[0-9]+(am|pm)+'];
 const defaultHour = 20;
@@ -39,7 +11,7 @@ function carinaParser(query) {
   let newQuery = query;
   let newDate,
     newTime,
-    repeat_every,
+    recurring,
     pomo_estimate = null;
   let hasTime = false;
   let temp;
@@ -48,7 +20,7 @@ function carinaParser(query) {
     temp = query.match(RegExp(`${item} [0-9]+`, 'i'));
     if (temp) {
       let r = temp[0].match(RegExp('[0-9]+'))[0];
-      repeat_every = r;
+      recurring = r;
       newQuery = newQuery.replace(temp[0], '');
     }
   });
@@ -62,6 +34,19 @@ function carinaParser(query) {
     }
   });
 
+  ['daily', 'every day', 'everyday'].map(item => {
+    if (newQuery.includes(item)) {
+      newQuery = newQuery.replace(item, '');
+      recurring = 1;
+    }
+  });
+
+  ['on the', ' the '].map(item => {
+    if (newQuery.includes(item)) {
+      newQuery = newQuery.replace(item, ' ');
+    }
+  });
+
   let results = chrono.parse(newQuery);
   if (results.length > 0) {
     let known = results[0].start.knownValues;
@@ -71,6 +56,10 @@ function carinaParser(query) {
     let day = known.day || implied.day;
     let hour = known.hour || implied.hour;
     let minute = known.minute || implied.minute;
+
+    if (implied.minute === 0 || known.minute === 0) {
+      minute = 0;
+    }
 
     let date = moment().set({
       year: year,
@@ -86,12 +75,6 @@ function carinaParser(query) {
 
     newDate = date.format();
     newQuery = newQuery.replace(results[0].text, '');
-    console.log('datum: ', newDate);
-    console.log('year: ', year);
-    console.log('month: ', month);
-    console.log('day: ', day);
-    console.log('hour: ', hour);
-    console.log('minute: ', minute);
   }
 
   attributes.newQuery = newQuery;
@@ -102,7 +85,7 @@ function carinaParser(query) {
   attributes.due_date = newDate;
   attributes.pomo_estimate = Number(pomo_estimate);
   attributes.hasTime = hasTime;
-  attributes.recurring = repeat_every ? Number(repeat_every) : null;
+  attributes.recurring = recurring ? Number(recurring) : null;
   attributes.newQuery = attributes.newQuery.trim();
 
   return attributes;

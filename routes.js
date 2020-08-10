@@ -168,9 +168,29 @@ router.get('/api/list/:user_id', async (req, res) => {
   }
 });
 
+router.get('/api/sharedwith/:list_id', async (req, res) => {
+  try {
+    let results = await db.sharedWith(req.params.list_id);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
 router.post('/api/list/', async (req, res) => {
   try {
     let results = await db.createList(req.body.user_id, req.body.title);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put('/api/list/', async (req, res) => {
+  try {
+    let results = await db.updateList(req.body.list_id, req.body.title);
     res.json(results);
   } catch (e) {
     console.error(e);
@@ -184,6 +204,19 @@ router.post('/api/shared_list/', async (req, res) => {
       req.body.list_id,
       req.body.shared_with,
       req.body.owner_id,
+    );
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.post('/api/stopsharinglist/', async (req, res) => {
+  try {
+    let results = await db.stopSharingList(
+      req.body.list_id,
+      req.body.shared_with,
     );
     res.json(results);
   } catch (e) {

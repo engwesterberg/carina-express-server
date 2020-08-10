@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "concurrently \"nodemon server.js\" \"cd client && npm start\"",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "test": "jest"
   },
   "dependencies": {
     "@babel/core": "^7.10.4",
@@ -16,6 +17,7 @@
     "concurrently": "^5.2.0",
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
+    "jest": "^26.3.0",
     "moments": "0.0.2",
     "morgan": "^1.9.1",
     "mysql": "^2.18.1",

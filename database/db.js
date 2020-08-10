@@ -223,6 +223,15 @@ carinadb.createList = (user_id, title) => {
   });
 };
 
+carinadb.updateList = (list_id, title) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`CALL updateList(?, ?)`, [list_id, title], (err, results) => {
+      if (err) return reject(err);
+      return resolve(results);
+    });
+  });
+};
+
 carinadb.shareList = (list_id, shared_with, owner_id) => {
   return new Promise((resolve, reject) => {
     pool.query(
@@ -233,6 +242,28 @@ carinadb.shareList = (list_id, shared_with, owner_id) => {
         return resolve(results);
       },
     );
+  });
+};
+
+carinadb.stopSharingList = (list_id, shared_with, ) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL stopSharingList(?,?)`,
+      [list_id, shared_with, ],
+      (err, results) => {
+        if (err) return reject(err);
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.sharedWith = list_id => {
+  return new Promise((resolve, reject) => {
+    pool.query(`CALL getSharedWith(?)`, [list_id], (err, results) => {
+      if (err) return reject(err);
+      return resolve(results);
+    });
   });
 };
 

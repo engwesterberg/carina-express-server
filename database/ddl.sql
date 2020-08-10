@@ -108,9 +108,20 @@ CREATE PROCEDURE shareList(
 BEGIN
 	INSERT INTO shared_lists(list_id, shared_with, owner_id)
 	VALUES (list_id, (SELECT id FROM users WHERE email=u_email), ownerId);
+    CALL getSharedWith(list_id);
 END //
 DELIMITER ;
 
+DROP procedure IF EXISTS  updateList;
+DELIMITER //
+CREATE PROCEDURE updateList(
+	IN aListId VARCHAR(124),
+    IN aTitle VARCHAR(124)
+)
+BEGIN
+	UPDATE lists SET title=aTitle WHERE id=aListId;
+END //
+DELIMITER ;
 
 
 DROP procedure IF EXISTS  removeList;
@@ -202,15 +213,30 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
-call signIn("janhelix@gmail.com");
-select * from users;
 
-SELECT @@global.time_zone, @@session.time_zone;
-select current_timestamp();
+DROP PROCEDURE IF EXISTS getSharedWith;
+DELIMITER //
+CREATE PROCEDURE getSharedWith(
+	IN aListId INTEGER
+)
+BEGIN
+    SELECT email, id, fullname FROM users WHERE id IN (select shared_with from shared_lists where list_id=aListId);
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS stopSharingList;
+DELIMITER //
+CREATE PROCEDURE stopSharingList(
+	IN aListId INTEGER, 
+    IN aUserId INTEGER
+)
+BEGIN
+    DELETE FROM shared_lists WHERE list_id=aListId AND shared_with=aUserId;
+    CALL getSharedWith(aListId);
+END //
+DELIMITER ;
+call stopSharingList(1, 2);
+select * from shared_lists;
 select * from todos;
-delete from todos;
-select * from lists;
-select * from users;
-delete from users;
-update todos set list_id=7 where id=134;
-update todos set user_id=14 where id=172;
+SELECT @@global.time_zone, @@session.time_zone;
+
