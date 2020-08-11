@@ -245,11 +245,11 @@ carinadb.shareList = (list_id, shared_with, owner_id) => {
   });
 };
 
-carinadb.stopSharingList = (list_id, shared_with, ) => {
+carinadb.stopSharingList = (list_id, shared_with) => {
   return new Promise((resolve, reject) => {
     pool.query(
       `CALL stopSharingList(?,?)`,
-      [list_id, shared_with, ],
+      [list_id, shared_with],
       (err, results) => {
         if (err) return reject(err);
         return resolve(results);
@@ -324,6 +324,16 @@ carinadb.deleteTodo = todo_id => {
 carinadb.incPomo = (user_id, todo_id) => {
   return new Promise((resolve, reject) => {
     pool.query(`CALL incPomo(?, ?)`, [user_id, todo_id], (err, results) => {
+      if (err) return reject(err);
+
+      return resolve(results);
+    });
+  });
+};
+
+carinadb.getPomosToday = user_id => {
+  return new Promise((resolve, reject) => {
+    pool.query(`CALL getPomosToday(?)`, [user_id], (err, results) => {
       if (err) return reject(err);
 
       return resolve(results);

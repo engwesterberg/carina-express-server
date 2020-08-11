@@ -187,6 +187,20 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS getPomosToday;
+DELIMITER //
+CREATE PROCEDURE getPomosToday(
+    IN aUserId INTEGER
+)
+BEGIN
+    SELECT (SELECT title FROM todos WHERE todos.id=pomodoros_done.todo_id) as task,pomodoros_done.completed 
+    FROM pomodoros_done 
+    WHERE completed >= CURDATE() && completed < (CURDATE() + INTERVAL 1 DAY);
+END //
+DELIMITER ;
+
+call getPomosToday(1);
+
 DROP PROCEDURE IF EXISTS createUser;
 DELIMITER //
 CREATE PROCEDURE createUser(
@@ -235,6 +249,8 @@ BEGIN
     CALL getSharedWith(aListId);
 END //
 DELIMITER ;
+
+
 call stopSharingList(1, 2);
 select * from shared_lists;
 select * from todos;

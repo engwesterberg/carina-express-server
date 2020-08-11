@@ -256,6 +256,16 @@ router.put('/api/incpomo/', async (req, res) => {
   }
 });
 
+router.put('/api/pomotoday/:user_id', async (req, res) => {
+  try {
+    let results = await db.getPomosToday(req.params.user_id);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
 router.delete('/api/todo/:todo_id', async (req, res) => {
   try {
     let results = await db.deleteTodo(req.params.todo_id);
