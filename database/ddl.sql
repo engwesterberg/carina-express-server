@@ -51,6 +51,16 @@ create table todos (
     FOREIGN KEY (list_id) REFERENCES lists(id)
 );
 
+drop table if exists sub_tasks;
+create table sub_tasks (
+	id int NOT NULL AUTO_INCREMENT,
+    todo_id INT NOT NULL,
+    title VARCHAR(128),
+    state INT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (todo_id) REFERENCES todos(id)
+);
+
 DROP TABLE IF EXISTS shared_lists;
 CREATE TABLE shared_lists (
 	id INT NOT NULL AUTO_INCREMENT,
@@ -95,6 +105,50 @@ SELECT * FROM  (SELECT u_id, u_email, u_name) AS tmp
 WHERE NOT EXISTS (
     SELECT * FROM users WHERE email = u_email
 ) LIMIT 1;
+END //
+DELIMITER ;
+
+DROP procedure IF EXISTS  addSubTask;
+DELIMITER //
+CREATE PROCEDURE addSubTask(
+	IN aTodoId INT,
+    IN aTitle VARCHAR(124)
+)
+BEGIN
+	INSERT INTO sub_tasks (todo_id, title, state)
+VALUES (aTodoId, aTitle, 0);
+END //
+DELIMITER ;
+
+DROP procedure IF EXISTS  deleteSubTask;
+DELIMITER //
+CREATE PROCEDURE deleteSubTask(
+	IN aId INT
+)
+BEGIN
+	DELETE FROM sub_tasks WHERE id=aId;
+END //
+DELIMITER ;
+
+DROP procedure IF EXISTS  editSubTask;
+DELIMITER //
+CREATE PROCEDURE editSubTask(
+	IN aId INT,
+    IN aTitle VARCHAR(124),
+    IN aState INT
+)
+BEGIN
+	UPDATE sub_tasks SET title=aTitle, state=aState WHERE id=aId;
+END //
+DELIMITER ;
+
+DROP procedure IF EXISTS  getSubTasks;
+DELIMITER //
+CREATE PROCEDURE getSubTasks(
+	IN aTodoId VARCHAR(124)
+)
+BEGIN
+	SELECT * FROM sub_tasks WHERE todo_id=aTodoId;
 END //
 DELIMITER ;
 

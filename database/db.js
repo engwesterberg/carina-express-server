@@ -152,6 +152,60 @@ carinadb.addtodo = (
   });
 };
 
+carinadb.addSubTask = (todo_id, title) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`call addSubTask(?, ?);`, [todo_id, title], (err, results) => {
+      if (err) return reject(err);
+
+      return resolve(results);
+    });
+  });
+};
+
+carinadb.deleteSubTask = id => {
+  return new Promise((resolve, reject) => {
+    pool.query(`call deleteSubTask(?);`, [id], (err, results) => {
+      if (err) return reject(err);
+
+      return resolve(results);
+    });
+  });
+};
+
+carinadb.editSubTask = (subtask_id, title, state) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `call editSubTask(?, ?, ?);`,
+      [subtask_id, title, state],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.getSubTasks = todo_id => {
+  return new Promise((resolve, reject) => {
+    pool.query(`call getSubTasks(?);`, [todo_id], (err, results) => {
+      if (err) return reject(err);
+      console.log(results);
+      return resolve(results);
+    });
+  });
+};
+
+carinadb.addSubTask = (todo_id, title) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`call addSubTask(?, ?);`, [todo_id, title], (err, results) => {
+      if (err) return reject(err);
+
+      return resolve(results);
+    });
+  });
+};
+
 carinadb.updateTodo = (
   id,
   list_id,

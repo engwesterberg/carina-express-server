@@ -21,4 +21,14 @@ call addTodo(1, 1, 'Study Korean', 'For 1 hour',NOW() + INTERVAL 1 DAY, false, 2
 call addTodo(1, null, 'Submit thesis', 'For 1 hour',NOW(), false, 0,0);
 call addTodo(2, null, 'Study English', 'For 1 hour',NOW()+1, false, 10,0);
 
+call addSubTask(1, 'Grammar');
+call addSubTask(1, 'Speaking');
+call addSubTask(1, 'Spelling');
+call getSubTasks(1);
+call deleteSubTask(1);
+
+select * from users;
+select * from sub_tasks;
 select * from pomodoros_done;
+select * from todos;
+call editSubTask(1, "lol", 1);

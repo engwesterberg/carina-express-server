@@ -118,6 +118,49 @@ router.post('/api/todo/', async (req, res) => {
   }
 });
 
+router.post('/api/subtask/', async (req, res) => {
+  try {
+    let results = db.addSubTask(req.body.todo_id, req.body.title);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+router.put('/api/subtask/', async (req, res) => {
+  try {
+    let results = db.editSubTask(
+      req.body.subtask_id,
+      req.body.title,
+      req.body.state,
+    );
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.delete('/api/subtask/:id', async (req, res) => {
+  try {
+    let results = await db.deleteSubTask(req.params.id);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.get('/api/subtask/:todo_id', async (req, res) => {
+  try {
+    let results = await db.getSubTasks(req.params.todo_id);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
 router.post('/api/todocopy/', async (req, res) => {
   try {
     let results = await db.addtodo(
