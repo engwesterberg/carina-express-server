@@ -46,6 +46,7 @@ create table todos (
     state INT,
     recurring INT DEFAULT NULL,
     created DATETIME DEFAULT CURRENT_TIMESTAMP,
+    completed DATETIME DEFAULT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (list_id) REFERENCES lists(id)
@@ -304,9 +305,14 @@ BEGIN
 END //
 DELIMITER ;
 
-
-call stopSharingList(1, 2);
-select * from shared_lists;
-select * from todos;
-SELECT @@global.time_zone, @@session.time_zone;
-
+DROP PROCEDURE IF EXISTS emptyTrash;
+DELIMITER //
+CREATE PROCEDURE emptyTrash(
+    IN aUserId INTEGER
+)
+BEGIN
+DELETE FROM sub_tasks WHERE todo_id IN (SELECT id FROM todos WHERE user_id=aUserId AND state=2);
+    DELETE FROM todos WHERE user_id=aUserId AND state=2;
+END //
+DELIMITER ;
+;

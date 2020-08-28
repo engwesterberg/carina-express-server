@@ -26,6 +26,7 @@ router.get('/api/id/:user_id', async (req, res) => {
     res.json(results);
   } catch (e) {
     console.error(e);
+
     res.sendStatus(500);
   }
 });
@@ -101,7 +102,7 @@ router.post('/api/signin/', async (req, res) => {
 router.post('/api/todo/', async (req, res) => {
   let parsed = carinaParser(req.body.query);
   try {
-    let results = await db.addtodo(
+    let results = await db.addTodo(
       req.body.user_id,
       req.body.list_id,
       parsed.newQuery,
@@ -163,7 +164,7 @@ router.get('/api/subtask/:todo_id', async (req, res) => {
 
 router.post('/api/todocopy/', async (req, res) => {
   try {
-    let results = await db.addtodo(
+    let results = await db.addTodo(
       req.body.user_id,
       req.body.list_id,
       req.body.title,
@@ -314,6 +315,16 @@ router.delete('/api/todo/:todo_id', async (req, res) => {
     let results = await db.deleteTodo(req.params.todo_id);
     res.json(results);
   } catch {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.delete('/api/emptytrash/:user_id', async (req, res) => {
+  try {
+    let results = await db.emptyTrash(req.params.user_id);
+    res.json(results);
+  } catch (e){
     console.error(e);
     res.sendStatus(500);
   }

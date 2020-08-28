@@ -120,7 +120,7 @@ carinadb.signin = email => {
   });
 };
 
-carinadb.addtodo = (
+carinadb.addTodo = (
   user_id,
   list_id,
   title,
@@ -190,7 +190,6 @@ carinadb.getSubTasks = todo_id => {
   return new Promise((resolve, reject) => {
     pool.query(`call getSubTasks(?);`, [todo_id], (err, results) => {
       if (err) return reject(err);
-      console.log(results);
       return resolve(results);
     });
   });
@@ -372,6 +371,16 @@ carinadb.deleteTodo = todo_id => {
         return resolve(results);
       },
     );
+  });
+};
+
+carinadb.emptyTrash = user_id => {
+  return new Promise((resolve, reject) => {
+    pool.query(`CALL emptyTrash(?)`, user_id, (err, results) => {
+      if (err) return reject(err);
+
+      return resolve(results);
+    });
   });
 };
 
