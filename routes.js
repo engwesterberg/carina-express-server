@@ -189,7 +189,6 @@ router.put('/api/todo/', async (req, res) => {
       req.body.title,
       req.body.note,
       req.body.pomo_estimate,
-      req.body.pomo_done,
       req.body.state,
       req.body.due_date,
       req.body.has_time,
@@ -324,7 +323,7 @@ router.delete('/api/emptytrash/:user_id', async (req, res) => {
   try {
     let results = await db.emptyTrash(req.params.user_id);
     res.json(results);
-  } catch (e){
+  } catch (e) {
     console.error(e);
     res.sendStatus(500);
   }

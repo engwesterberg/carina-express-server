@@ -211,7 +211,6 @@ carinadb.updateTodo = (
   title,
   note,
   pomo_estimate,
-  pomo_done,
   state,
   due_date,
   has_time,
@@ -219,31 +218,17 @@ carinadb.updateTodo = (
 ) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      `UPDATE  todos
-    SET
-      list_id=?,
-      title=?,
-        note=?,
-        pomo_estimate=?,
-        pomo_done=?,
-        state=?,
-        due_date=?,
-        has_time=?,
-        recurring=?
-    WHERE 
-      id=?
-        ;`,
+      `CALL updateTodo(?,?,?,?,?,?,?,?,?)`,
       [
+        id,
         list_id,
         title,
         note,
         pomo_estimate,
-        pomo_done,
         state,
         due_date,
         has_time,
-        recurring,
-        id,
+        recurring
       ],
       (err, results) => {
         if (err) return reject(err);

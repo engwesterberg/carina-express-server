@@ -22,7 +22,7 @@ call addTodo(1, 1, 'Study Korean', 'For 1 hour',NOW() + INTERVAL 1 DAY, false, 2
 call addTodo(1, null, 'Submit thesis', 'For 1 hour',NOW(), false, 0,0);
 call addTodo(2, null, 'Study English', 'For 1 hour',NOW()+1, false, 10,0);
 
-UPDATE todos SET state=1 WHERE state=0;
+/*UPDATE todos SET state=1 WHERE state=0;
 call addTodo(1, null, 'Study Japanese', 'For 1 hour',NOW(), false, 2,0);
 call addTodo(1, null, 'Study Math', 'For 1 hour',NOW(), false, 2,0);
 call addTodo(1, null, 'Wanikani', 'For 1 hour',NOW(), false, 2,0);
@@ -33,7 +33,7 @@ call addTodo(1, null, 'Order food online', 'For 1 hour',NOW(), false, 2,0);
 call addTodo(1, null, 'Workout', 'For 1 hour',NOW(), false, 4,0);
 call addTodo(1, 1, 'Study Korean', 'For 1 hour',NOW() + INTERVAL 1 DAY, false, 2,0);
 call addTodo(1, null, 'Submit thesis', 'For 1 hour',NOW(), false, 0,0);
-call addTodo(2, null, 'Study English', 'For 1 hour',NOW()+1, false, 10,0);
+call addTodo(2, null, 'Study English', 'For 1 hour',NOW()+1, false, 10,0);*/
 
 call addSubTask(1, 'Grammar');
 call addSubTask(1, 'Speaking');

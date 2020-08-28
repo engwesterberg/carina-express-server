@@ -213,7 +213,41 @@ BEGIN
        ORDER BY -due_date DESC;
 END //
 DELIMITER ;
-select * from todos;
+
+DROP procedure IF EXISTS  updateTodo;
+DELIMITER //
+CREATE PROCEDURE updateTodo(
+        IN aId INT,
+		IN aListId INT,
+        IN aTitle VARCHAR(64),
+        IN aNote VARCHAR(1024),
+        IN aPomoEstimate INT,
+        IN aState INT,
+        IN aDue_date DATETIME,
+        IN aHasTime BOOL,
+        IN aRecurring INT
+)
+BEGIN
+	UPDATE  todos
+    SET
+      list_id=aListId,
+      title=aTitle,
+        note=aNote,
+        pomo_estimate=aPomoEstimate,
+        state=aState,
+        due_date=aDue_date,
+        has_time=aHasTime,
+        recurring=aRecurring
+    WHERE 
+      id=aId
+        ;
+        IF aState=1 THEN
+			UPDATE todos SET completed=CURRENT_TIMESTAMP WHERE id=aId;
+		ELSEIF aState=0 THEN
+			UPDATE todos SET completed=NULL WHERE id=aId;
+		end if;
+END //
+DELIMITER ;
 
 DROP procedure IF EXISTS  getLists;
 DELIMITER //
