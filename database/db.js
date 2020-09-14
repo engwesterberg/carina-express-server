@@ -14,7 +14,7 @@ const pool =
         connectionLimit: 10,
         host: '127.0.0.1',
         user: 'root',
-        password: 'harrot92',
+        password: 'pass',
         database: 'carina',
         port: 3306,
       });
