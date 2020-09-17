@@ -207,10 +207,6 @@ CREATE PROCEDURE addTodo(
 BEGIN
 	INSERT INTO todos (user_id, list_id, title, note, due_date, has_time, pomo_estimate, state, pomo_done, recurring)
         VALUES (userId, listId, todo_title,pNote, dueDate, hasTime,pomoEstimate, 0, 0, recurr);
-	SELECT * FROM todos WHERE user_id = userId OR 
-      list_id IN (SELECT list_id FROM shared_lists WHERE shared_with=userId)
-      OR list_id in (SELECT id FROM lists WHERE user_id=userId)
-       ORDER BY -due_date DESC;
 END //
 DELIMITER ;
 
