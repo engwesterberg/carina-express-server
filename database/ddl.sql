@@ -350,3 +350,81 @@ DELETE FROM sub_tasks WHERE todo_id IN (SELECT id FROM todos WHERE user_id=aUser
 END //
 DELIMITER ;
 ;
+
+-- Update todo attributes
+DROP PROCEDURE IF EXISTS editTodoTitle;
+DELIMITER //
+CREATE PROCEDURE editTodoTitle(
+    IN aTodoId INTEGER,
+    IN newTitle VARCHAR(512)
+)
+BEGIN
+  UPDATE todos SET title=newTitle WHERE id=aTodoId;
+END //
+DELIMITER ;
+;
+
+DROP PROCEDURE IF EXISTS editTodoNote;
+DELIMITER //
+CREATE PROCEDURE editTodoNote(
+    IN aTodoId INTEGER,
+    IN newNote VARCHAR(1024)
+)
+BEGIN
+  UPDATE todos SET note=newNote WHERE id=aTodoId;
+END //
+DELIMITER ;
+;
+
+DROP PROCEDURE IF EXISTS editTodoState;
+DELIMITER //
+CREATE PROCEDURE editTodoState(
+    IN aTodoId INTEGER,
+    IN newState INTEGER
+)
+BEGIN
+  UPDATE todos SET state=newState WHERE id=aTodoId;
+END //
+DELIMITER ;
+;
+
+DROP PROCEDURE IF EXISTS editTodoPomoEstimate;
+DELIMITER //
+CREATE PROCEDURE editTodoPomoEstimate(
+    IN aTodoId INTEGER,
+    IN newEstimate INTEGER
+)
+BEGIN
+  UPDATE todos SET pomo_estimate=newEstimate WHERE id=aTodoId;
+END //
+DELIMITER ;
+;
+
+DROP PROCEDURE IF EXISTS editTodoDate;
+DELIMITER //
+CREATE PROCEDURE editTodoDate(
+    IN aTodoId INTEGER,
+    IN newDate DATETIME
+)
+BEGIN
+  UPDATE todos SET due_date=due_date + INTERVAL DATEDIFF(newDate, due_date) DAY
+ WHERE id=aTodoId;
+END //
+DELIMITER ;
+;
+
+DROP PROCEDURE IF EXISTS editTodoTime;
+DELIMITER //
+CREATE PROCEDURE editTodoTime(
+    IN aTodoId INTEGER,
+    IN newTime VARCHAR(20)
+)
+BEGIN
+  UPDATE todos 
+  SET 
+   due_date = concat(date(due_date),TIME_FORMAT(newTime, ' %H:%i'))
+ WHERE id=aTodoId;
+END //
+DELIMITER ;
+;
+select * from todos where id=4;

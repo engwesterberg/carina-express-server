@@ -15,9 +15,9 @@ const dbDate = moment => {
 };
 
 router.get('/api/apitest', (req, res) => {
-  let bajs = {msg: 'success'};
+  let message = {msg: 'success'};
 
-  res.send(bajs);
+  res.send(message);
 });
 
 router.get('/api/id/:user_id', async (req, res) => {
@@ -322,6 +322,69 @@ router.delete('/api/todo/:todo_id', async (req, res) => {
 router.delete('/api/emptytrash/:user_id', async (req, res) => {
   try {
     let results = await db.emptyTrash(req.params.user_id);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put('/api/todotitle/', async (req, res) => {
+  try {
+    let results = await db.updateTodoTitle(req.body.todo_id, req.body.newTitle);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put('/api/todonote/', async (req, res) => {
+  try {
+    let results = await db.updateTodoNote(req.body.todo_id, req.body.newNote);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put('/api/todopomoestimate/', async (req, res) => {
+  try {
+    let results = await db.updatePomoEstimate(
+      req.body.todo_id,
+      req.body.newPomoEstimate,
+    );
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put('/api/tododate/', async (req, res) => {
+  try {
+    let results = await db.editTodoDate(req.body.todo_id, req.body.newDate);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put('/api/todotime/', async (req, res) => {
+  try {
+    let results = await db.editTodoTime(req.body.todo_id, req.body.newTime);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put('/api/todostate/', async (req, res) => {
+  try {
+    let results = await db.editTodoState(req.body.todo_id, req.body.newState);
     res.json(results);
   } catch (e) {
     console.error(e);

@@ -228,7 +228,7 @@ carinadb.updateTodo = (
         state,
         due_date,
         has_time,
-        recurring
+        recurring,
       ],
       (err, results) => {
         if (err) return reject(err);
@@ -386,6 +386,91 @@ carinadb.getPomosToday = user_id => {
 
       return resolve(results);
     });
+  });
+};
+
+// Updating todo attributes
+carinadb.updateTodoTitle = (todo_id, newTitle) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL editTodoTitle(?, ?)`,
+      [todo_id, newTitle],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.updateTodoNote = (todo_id, newNote) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL editTodoNote(?, ?)`,
+      [todo_id, newNote],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.updatePomoEstimate = (todo_id, newPomoEstimate) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL editTodoNote(?, ?)`,
+      [todo_id, newPomoEstimate],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.editTodoDate = (todo_id, newDate) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL editTodoDate(?, ?)`,
+      [todo_id, newDate],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.editTodoTime = (todo_id, newTime) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL editTodoTime(?, ?)`,
+      [todo_id, newTime],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.editTodoState = (todo_id, newState) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL editTodoState(?, ?)`,
+      [todo_id, newState],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
   });
 };
 
