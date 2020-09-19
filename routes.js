@@ -181,6 +181,8 @@ router.post('/api/todocopy/', async (req, res) => {
   }
 });
 
+
+// note used anymore -------------------
 router.put('/api/todo/', async (req, res) => {
   try {
     let results = await db.updateTodo(
@@ -201,6 +203,7 @@ router.put('/api/todo/', async (req, res) => {
   }
 });
 
+// ---------------------------------------
 router.get('/api/list/:user_id', async (req, res) => {
   try {
     let results = await db.getLists(req.params.user_id);
@@ -280,8 +283,8 @@ router.put('/api/list/', async (req, res) => {
 
 router.delete('/api/list/:list_id', async (req, res) => {
   try {
-    await db.deleteList(req.params.list_id);
-    results = await db.setListNull(req.params.list_id);
+    let results = await db.deleteList(req.params.list_id);
+     await db.setListNull(req.params.list_id);
     res.json(results);
   } catch (e) {
     console.error(e);

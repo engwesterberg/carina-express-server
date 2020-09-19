@@ -207,6 +207,7 @@ CREATE PROCEDURE addTodo(
 BEGIN
 	INSERT INTO todos (user_id, list_id, title, note, due_date, has_time, pomo_estimate, state, pomo_done, recurring)
         VALUES (userId, listId, todo_title,pNote, dueDate, hasTime,pomoEstimate, 0, 0, recurr);
+        SELECT * FROM todos WHERE user_id=userId ORDER BY id DESC LIMIT 1;
 END //
 DELIMITER ;
 
@@ -341,11 +342,14 @@ CREATE PROCEDURE emptyTrash(
     IN aUserId INTEGER
 )
 BEGIN
+DELETE FROM pomodoros_done WHERE todo_id IN (SELECT id FROM todos WHERE user_id=aUserId AND state=2);
 DELETE FROM sub_tasks WHERE todo_id IN (SELECT id FROM todos WHERE user_id=aUserId AND state=2);
     DELETE FROM todos WHERE user_id=aUserId AND state=2;
 END //
 DELIMITER ;
 ;
+select * from pomodoros_done;
+select * from todos;
 
 -- Update todo attributes
 DROP PROCEDURE IF EXISTS editTodoTitle;
@@ -356,6 +360,7 @@ CREATE PROCEDURE editTodoTitle(
 )
 BEGIN
   UPDATE todos SET title=newTitle WHERE id=aTodoId;
+  SELECT * FROM todos WHERE id=aTodoId;
 END //
 DELIMITER ;
 ;
@@ -368,6 +373,7 @@ CREATE PROCEDURE editTodoNote(
 )
 BEGIN
   UPDATE todos SET note=newNote WHERE id=aTodoId;
+    SELECT * FROM todos WHERE id=aTodoId;
 END //
 DELIMITER ;
 ;
@@ -380,6 +386,8 @@ CREATE PROCEDURE editTodoState(
 )
 BEGIN
   UPDATE todos SET state=newState WHERE id=aTodoId;
+	SELECT * FROM todos WHERE id=aTodoId;
+
 END //
 DELIMITER ;
 ;
@@ -392,6 +400,8 @@ CREATE PROCEDURE editTodoPomoEstimate(
 )
 BEGIN
   UPDATE todos SET pomo_estimate=newEstimate WHERE id=aTodoId;
+  SELECT * FROM todos WHERE id=aTodoId;
+  
 END //
 DELIMITER ;
 ;
@@ -405,6 +415,8 @@ CREATE PROCEDURE editTodoDate(
 BEGIN
   UPDATE todos SET due_date=due_date + INTERVAL DATEDIFF(newDate, due_date) DAY
  WHERE id=aTodoId;
+   SELECT * FROM todos WHERE id=aTodoId;
+
 END //
 DELIMITER ;
 ;
@@ -420,6 +432,8 @@ BEGIN
   SET 
    due_date = concat(date(due_date),TIME_FORMAT(newTime, ' %H:%i'))
  WHERE id=aTodoId;
+   SELECT * FROM todos WHERE id=aTodoId;
+
 END //
 DELIMITER ;
 ;

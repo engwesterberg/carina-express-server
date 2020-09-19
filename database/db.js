@@ -421,7 +421,7 @@ carinadb.updateTodoNote = (todo_id, newNote) => {
 carinadb.updatePomoEstimate = (todo_id, newPomoEstimate) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      `CALL editTodoNote(?, ?)`,
+      `CALL editTodoPomoEstimate(?, ?)`,
       [todo_id, newPomoEstimate],
       (err, results) => {
         if (err) return reject(err);

@@ -47,4 +47,6 @@ select * from sub_tasks;
 select * from pomodoros_done;
 select * from todos;
 call editSubTask(1, "lol", 1);
-select * from users;
+select * from todos where user_id=1 order by id desc limit 1;
+select * from sub_tasks;
+select * from lists;
