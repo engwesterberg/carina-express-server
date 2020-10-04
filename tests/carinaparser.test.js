@@ -40,7 +40,7 @@ describe('Date test suite', () => {
 
   it('Adds a task tomorrow', () => {
     let res = carinaParser('Study Japanese tomorrow');
-    expect(moment(res.due_date).date()).toBe(moment().add(1, 'days').date());
+    expect(moment(res.due_date).date()).toBe(moment.utc().add(1, 'days').date());
   });
 
   it('Adds a task in 59 days', () => {

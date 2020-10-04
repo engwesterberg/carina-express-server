@@ -474,4 +474,18 @@ carinadb.editTodoState = (todo_id, newState) => {
   });
 };
 
+carinadb.editTodoRecurring = (todo_id, newRecurring) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL editTodoRecurring(?, ?)`,
+      [todo_id, newRecurring],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
 module.exports = carinadb;

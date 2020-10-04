@@ -50,3 +50,6 @@ call editSubTask(1, "lol", 1);
 select * from todos where user_id=1 order by id desc limit 1;
 select * from sub_tasks;
 select * from lists;
+select * from todos;
+select * from users;
+call editTodoRecurring(1, 20);

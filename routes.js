@@ -181,7 +181,6 @@ router.post('/api/todocopy/', async (req, res) => {
   }
 });
 
-
 // note used anymore -------------------
 router.put('/api/todo/', async (req, res) => {
   try {
@@ -284,7 +283,7 @@ router.put('/api/list/', async (req, res) => {
 router.delete('/api/list/:list_id', async (req, res) => {
   try {
     let results = await db.deleteList(req.params.list_id);
-     await db.setListNull(req.params.list_id);
+    await db.setListNull(req.params.list_id);
     res.json(results);
   } catch (e) {
     console.error(e);
@@ -385,9 +384,13 @@ router.put('/api/todotime/', async (req, res) => {
   }
 });
 
-router.put('/api/todostate/', async (req, res) => {
+router.put('/api/todorecurring/', async (req, res) => {
   try {
-    let results = await db.editTodoState(req.body.todo_id, req.body.newState);
+console.log(req.body.todo_id, req.body.newRecurring);
+    let results = await db.editTodoRecurring(
+      req.body.todo_id,
+      req.body.newRecurring,
+    );
     res.json(results);
   } catch (e) {
     console.error(e);

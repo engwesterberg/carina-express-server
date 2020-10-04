@@ -385,6 +385,7 @@ CREATE PROCEDURE editTodoState(
     IN newState INTEGER
 )
 BEGIN
+
   UPDATE todos SET state=newState WHERE id=aTodoId;
 	SELECT * FROM todos WHERE id=aTodoId;
 
@@ -413,10 +414,13 @@ CREATE PROCEDURE editTodoDate(
     IN newDate DATETIME
 )
 BEGIN
+IF (SELECT due_date from todos WHERE id=aTodoId) = null THEN
+	UPDATE todos SET due_date=newDate WHERE id=aTodoId;
+ELSE
   UPDATE todos SET due_date=due_date + INTERVAL DATEDIFF(newDate, due_date) DAY
  WHERE id=aTodoId;
    SELECT * FROM todos WHERE id=aTodoId;
-
+END IF;
 END //
 DELIMITER ;
 ;
@@ -432,9 +436,29 @@ BEGIN
   SET 
    due_date = concat(date(due_date),TIME_FORMAT(newTime, ' %H:%i'))
  WHERE id=aTodoId;
+ UPDATE todos SET has_time = TRUE WHERE  id=aTodoId;
    SELECT * FROM todos WHERE id=aTodoId;
 
 END //
 DELIMITER ;
 ;
-select * from todos where id=4;
+
+DROP PROCEDURE IF EXISTS editTodoRecurring;
+DELIMITER //
+CREATE PROCEDURE editTodoRecurring(
+    IN aTodoId INTEGER,
+    IN newRecurring INTEGER
+)
+BEGIN
+  UPDATE todos 
+  SET 
+   recurring = newRecurring
+ WHERE id=aTodoId;
+   SELECT * FROM todos WHERE id=aTodoId;
+
+END //
+DELIMITER ;
+;
+
+select count((select id from todos where id=3));
+
