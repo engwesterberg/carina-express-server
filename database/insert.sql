@@ -53,3 +53,5 @@ select * from lists;
 select * from todos;
 select * from users;
 call editTodoRecurring(1, 20);
+
+select * from todos;

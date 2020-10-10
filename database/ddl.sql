@@ -21,6 +21,7 @@ CREATE TABLE settings (
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
+
 drop table if exists lists;
 create table lists (
 	id int NOT NULL AUTO_INCREMENT,
@@ -348,8 +349,6 @@ DELETE FROM sub_tasks WHERE todo_id IN (SELECT id FROM todos WHERE user_id=aUser
 END //
 DELIMITER ;
 ;
-select * from pomodoros_done;
-select * from todos;
 
 -- Update todo attributes
 DROP PROCEDURE IF EXISTS editTodoTitle;
