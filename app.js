@@ -17,6 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 console.log('process env:', process.env.NODE_ENV);
+console.log('process env:', process.env.ACCESS_TOKEN_SECRET);
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
   app.use(express.static(path.join(__dirname, 'client/build')));

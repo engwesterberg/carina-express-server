@@ -3,10 +3,12 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const moment = require('moment');
 const saltRounds = 10;
+const jwt = require('jsonwebtoken');
 const db = require('./database/db');
 const carinaParser = require('./CarinaParser');
 const dbFormat = 'YYYY-MM-DD HH:mm:ss';
 
+//Authenticate a users token
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -20,10 +22,12 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-const generateAccessToken = (username) => {
-  // expires after half and hour (1800 seconds = 30 minutes)
-  return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
-}
+//Generate a token for user
+const generateAccessToken = username => {
+  return jwt.sign(username, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '7d',
+  });
+};
 
 const dbDate = moment => {
   if (process.env.NODE_ENV !== 'production') {
@@ -38,7 +42,7 @@ router.get('/api/apitest', (req, res) => {
   res.send(message);
 });
 
-router.get('/api/id/:user_id', async (req, res) => {
+router.get('/api/id/:user_id', authenticateToken, async (req, res) => {
   try {
     let results = await db.userid(req.params.user_id);
     res.json(results);
@@ -59,7 +63,7 @@ router.get('/api/todos/:id', authenticateToken, async (req, res) => {
   }
 });
 
-router.get('/api/todosfromlist/', async (req, res) => {
+router.get('/api/todosfromlist/', authenticateToken, async (req, res) => {
   try {
     let results = await db.fromlist(req.body.user_id, req.body.list_id);
     res.json(results);
@@ -108,8 +112,10 @@ router.post('/api/signin/', async (req, res) => {
       err,
       result,
     ) {
-      if (result) res.json(results);
-      else res.sendStatus(500);
+      if (result) {
+        const token = generateAccessToken({email: req.body.email});
+        res.json({userInfo: results, token: token});
+      } else res.sendStatus(500);
     });
   } catch (e) {
     console.error(e);
@@ -117,7 +123,7 @@ router.post('/api/signin/', async (req, res) => {
   }
 });
 
-router.post('/api/todo/', async (req, res) => {
+router.post('/api/todo/', authenticateToken, async (req, res) => {
   let parsed = carinaParser(req.body.query);
   try {
     let results = await db.addTodo(
@@ -137,7 +143,7 @@ router.post('/api/todo/', async (req, res) => {
   }
 });
 
-router.post('/api/subtask/', async (req, res) => {
+router.post('/api/subtask/', authenticateToken, async (req, res) => {
   try {
     let results = db.addSubTask(req.body.todo_id, req.body.title);
     res.json(results);
@@ -146,7 +152,7 @@ router.post('/api/subtask/', async (req, res) => {
     res.sendStatus(500);
   }
 });
-router.put('/api/subtask/', async (req, res) => {
+router.put('/api/subtask/', authenticateToken, async (req, res) => {
   try {
     let results = db.editSubTask(
       req.body.subtask_id,
@@ -160,7 +166,7 @@ router.put('/api/subtask/', async (req, res) => {
   }
 });
 
-router.delete('/api/subtask/:id', async (req, res) => {
+router.delete('/api/subtask/:id', authenticateToken, async (req, res) => {
   try {
     let results = await db.deleteSubTask(req.params.id);
     res.json(results);
@@ -170,7 +176,7 @@ router.delete('/api/subtask/:id', async (req, res) => {
   }
 });
 
-router.get('/api/subtask/:todo_id', async (req, res) => {
+router.get('/api/subtask/:todo_id', authenticateToken, async (req, res) => {
   try {
     let results = await db.getSubTasks(req.params.todo_id);
     res.json(results);
@@ -180,7 +186,7 @@ router.get('/api/subtask/:todo_id', async (req, res) => {
   }
 });
 
-router.post('/api/todocopy/', async (req, res) => {
+router.post('/api/todocopy/', authenticateToken, async (req, res) => {
   try {
     let results = await db.addTodo(
       req.body.user_id,
@@ -200,7 +206,7 @@ router.post('/api/todocopy/', async (req, res) => {
 });
 
 // note used anymore -------------------
-router.put('/api/todo/', async (req, res) => {
+router.put('/api/todo/', aauthenticateToken, async (req, res) => {
   try {
     let results = await db.updateTodo(
       req.body.id,
@@ -221,7 +227,7 @@ router.put('/api/todo/', async (req, res) => {
 });
 
 // ---------------------------------------
-router.get('/api/list/:user_id', async (req, res) => {
+router.get('/api/list/:user_id',authenticateToken, async (req, res) => {
   try {
     let results = await db.getLists(req.params.user_id);
     res.json(results);
@@ -231,7 +237,7 @@ router.get('/api/list/:user_id', async (req, res) => {
   }
 });
 
-router.get('/api/sharedwith/:list_id', async (req, res) => {
+router.get('/api/sharedwith/:list_id',authenticateToken, async (req, res) => {
   try {
     let results = await db.sharedWith(req.params.list_id);
     res.json(results);
@@ -241,7 +247,7 @@ router.get('/api/sharedwith/:list_id', async (req, res) => {
   }
 });
 
-router.post('/api/list/', async (req, res) => {
+router.post('/api/list/',authenticateToken, async (req, res) => {
   try {
     let results = await db.createList(req.body.user_id, req.body.title);
     res.json(results);
@@ -251,7 +257,7 @@ router.post('/api/list/', async (req, res) => {
   }
 });
 
-router.put('/api/list/', async (req, res) => {
+router.put('/api/list/',authenticateToken, async (req, res) => {
   try {
     let results = await db.updateList(req.body.list_id, req.body.title);
     res.json(results);
@@ -261,7 +267,7 @@ router.put('/api/list/', async (req, res) => {
   }
 });
 
-router.post('/api/shared_list/', async (req, res) => {
+router.post('/api/shared_list/',authenticateToken, async (req, res) => {
   try {
     let results = await db.shareList(
       req.body.list_id,
@@ -275,7 +281,7 @@ router.post('/api/shared_list/', async (req, res) => {
   }
 });
 
-router.post('/api/stopsharinglist/', async (req, res) => {
+router.post('/api/stopsharinglist/',authenticateToken, async (req, res) => {
   try {
     let results = await db.stopSharingList(
       req.body.list_id,
@@ -288,7 +294,7 @@ router.post('/api/stopsharinglist/', async (req, res) => {
   }
 });
 
-router.put('/api/list/', async (req, res) => {
+router.put('/api/list/',authenticateToken, async (req, res) => {
   try {
     let results = await db.renameList(req.body.list_id, req.body.new_title);
     res.json(results);
@@ -298,7 +304,7 @@ router.put('/api/list/', async (req, res) => {
   }
 });
 
-router.delete('/api/list/:list_id', async (req, res) => {
+router.delete('/api/list/:list_id',authenticateToken, async (req, res) => {
   try {
     let results = await db.deleteList(req.params.list_id);
     await db.setListNull(req.params.list_id);
@@ -309,7 +315,7 @@ router.delete('/api/list/:list_id', async (req, res) => {
   }
 });
 
-router.put('/api/incpomo/', async (req, res) => {
+router.put('/api/incpomo/',authenticateToken, async (req, res) => {
   try {
     let results = await db.incPomo(req.body.user_id, req.body.todo_id);
     res.json(results);
@@ -319,7 +325,7 @@ router.put('/api/incpomo/', async (req, res) => {
   }
 });
 
-router.put('/api/pomotoday/:user_id', async (req, res) => {
+router.put('/api/pomotoday/:user_id',authenticateToken, async (req, res) => {
   try {
     let results = await db.getPomosToday(req.params.user_id);
     res.json(results);
@@ -329,7 +335,7 @@ router.put('/api/pomotoday/:user_id', async (req, res) => {
   }
 });
 
-router.delete('/api/todo/:todo_id', async (req, res) => {
+router.delete('/api/todo/:todo_id',authenticateToken, async (req, res) => {
   try {
     let results = await db.deleteTodo(req.params.todo_id);
     res.json(results);
@@ -339,7 +345,7 @@ router.delete('/api/todo/:todo_id', async (req, res) => {
   }
 });
 
-router.delete('/api/emptytrash/:user_id', async (req, res) => {
+router.delete('/api/emptytrash/:user_id',authenticateToken, async (req, res) => {
   try {
     let results = await db.emptyTrash(req.params.user_id);
     res.json(results);
@@ -349,7 +355,7 @@ router.delete('/api/emptytrash/:user_id', async (req, res) => {
   }
 });
 
-router.put('/api/todotitle/', async (req, res) => {
+router.put('/api/todotitle/',authenticateToken, async (req, res) => {
   try {
     let results = await db.updateTodoTitle(req.body.todo_id, req.body.newTitle);
     res.json(results);
@@ -359,7 +365,7 @@ router.put('/api/todotitle/', async (req, res) => {
   }
 });
 
-router.put('/api/todonote/', async (req, res) => {
+router.put('/api/todonote/',authenticateToken, async (req, res) => {
   try {
     let results = await db.updateTodoNote(req.body.todo_id, req.body.newNote);
     res.json(results);
@@ -369,7 +375,7 @@ router.put('/api/todonote/', async (req, res) => {
   }
 });
 
-router.put('/api/todopomoestimate/', async (req, res) => {
+router.put('/api/todopomoestimate/',authenticateToken, async (req, res) => {
   try {
     let results = await db.updatePomoEstimate(
       req.body.todo_id,
@@ -382,7 +388,7 @@ router.put('/api/todopomoestimate/', async (req, res) => {
   }
 });
 
-router.put('/api/tododate/', async (req, res) => {
+router.put('/api/tododate/',authenticateToken, async (req, res) => {
   try {
     let results = await db.editTodoDate(req.body.todo_id, req.body.newDate);
     res.json(results);
@@ -392,7 +398,7 @@ router.put('/api/tododate/', async (req, res) => {
   }
 });
 
-router.put('/api/todotime/', async (req, res) => {
+router.put('/api/todotime/',authenticateToken, async (req, res) => {
   try {
     let results = await db.editTodoTime(req.body.todo_id, req.body.newTime);
     res.json(results);
@@ -402,7 +408,7 @@ router.put('/api/todotime/', async (req, res) => {
   }
 });
 
-router.put('/api/todorecurring/', async (req, res) => {
+router.put('/api/todorecurring/',authenticateToken, async (req, res) => {
   try {
     console.log(req.body.todo_id, req.body.newRecurring);
     let results = await db.editTodoRecurring(
