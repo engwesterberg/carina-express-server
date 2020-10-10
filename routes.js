@@ -7,6 +7,24 @@ const db = require('./database/db');
 const carinaParser = require('./CarinaParser');
 const dbFormat = 'YYYY-MM-DD HH:mm:ss';
 
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) return res.sendStatus(401); // if there isn't any token
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    console.log(err);
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next(); // pass the execution off to whatever request the client intended
+  });
+};
+
+const generateAccessToken = (username) => {
+  // expires after half and hour (1800 seconds = 30 minutes)
+  return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+}
+
 const dbDate = moment => {
   if (process.env.NODE_ENV !== 'production') {
     return moment.format(dbFormat);
@@ -31,7 +49,7 @@ router.get('/api/id/:user_id', async (req, res) => {
   }
 });
 
-router.get('/api/todos/:id', async (req, res) => {
+router.get('/api/todos/:id', authenticateToken, async (req, res) => {
   try {
     let results = await db.foruser(req.params.id);
     res.json(results);
@@ -386,7 +404,7 @@ router.put('/api/todotime/', async (req, res) => {
 
 router.put('/api/todorecurring/', async (req, res) => {
   try {
-console.log(req.body.todo_id, req.body.newRecurring);
+    console.log(req.body.todo_id, req.body.newRecurring);
     let results = await db.editTodoRecurring(
       req.body.todo_id,
       req.body.newRecurring,

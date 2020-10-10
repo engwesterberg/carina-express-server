@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+require('dotenv').config();
 
 const pool =
   process.env.NODE_ENV === 'production'
@@ -11,12 +12,12 @@ const pool =
         port: 3306,
       })
     : mysql.createPool({
-        connectionLimit: 10,
-        host: '127.0.0.1',
-        user: 'root',
-        password: 'pass',
-        database: 'carina',
-        port: 3306,
+        connectionLimit: process.env.DB_CONNECTION_LIMIT,
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE_NAME,
+        port: process.env.DB_PORT,
       });
 
 //timezone: 'UTC-4',
