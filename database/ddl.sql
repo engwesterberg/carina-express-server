@@ -459,5 +459,22 @@ END //
 DELIMITER ;
 ;
 
+DROP PROCEDURE IF EXISTS editTodosList;
+DELIMITER //
+CREATE PROCEDURE editTodosList(
+    IN aTodoId INTEGER,
+    IN aListId INTEGER
+)
+BEGIN
+  UPDATE todos 
+  SET 
+   list_id = aListId
+ WHERE id=aTodoId;
+   SELECT * FROM todos WHERE id=aTodoId;
+
+END //
+DELIMITER ;
+;
+
 select count((select id from todos where id=3));
 

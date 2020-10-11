@@ -44,7 +44,7 @@ router.get('/api/apitest', (req, res) => {
 });
 
 //get id based on googleid
-router.get('/api/id/:user_id',  async (req, res) => {
+router.get('/api/id/:user_id', async (req, res) => {
   try {
     let results = await db.userid(req.params.user_id);
     const token = generateAccessToken({googleId: req.params.user_id});
@@ -430,6 +430,20 @@ router.put('/api/todorecurring/', authenticateToken, async (req, res) => {
     let results = await db.editTodoRecurring(
       req.body.todo_id,
       req.body.newRecurring,
+    );
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+//Update which list todo belongs in
+router.put('/api/todoslist/', authenticateToken, async (req, res) => {
+  try {
+    let results = await db.editTodosList(
+      req.body.todo_id,
+      req.body.list_id,
     );
     res.json(results);
   } catch (e) {

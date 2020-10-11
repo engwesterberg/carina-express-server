@@ -1,8 +1,25 @@
 const request = require('supertest');
 const app = require('../app.js');
 import moment from 'moment';
+const jwt = require('jsonwebtoken');
 
 const WANIKANI_ID = 3;
+
+const generateAccessToken = username => {
+  return jwt.sign(username, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '7d',
+  });
+};
+
+const testToken = generateAccessToken({googleId: req.params.user_id});
+
+const getRequestConfig = (token) => {
+  return {
+    headers: {
+      Authorization: 'Bearer ' + token,
+    },
+  };
+};
 
 describe('api/apitest', () => {
   test('Should fetch some simple data', done => {
