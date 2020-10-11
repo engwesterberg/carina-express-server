@@ -43,10 +43,12 @@ router.get('/api/apitest', (req, res) => {
   res.send(message);
 });
 
-router.get('/api/id/:user_id', authenticateToken, async (req, res) => {
+//get id based on googleid
+router.get('/api/id/:user_id',  async (req, res) => {
   try {
     let results = await db.userid(req.params.user_id);
-    res.json(results);
+    const token = generateAccessToken({googleId: req.params.user_id});
+    res.json({result: results, token: token});
   } catch (e) {
     console.error(e);
 

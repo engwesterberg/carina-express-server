@@ -447,6 +447,19 @@ carinadb.updatePomoEstimate = (todo_id, newPomoEstimate) => {
   });
 };
 
+carinadb.editTodoDate = (todo_id, newDate) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL editTodoDate(?, ?)`,
+      [todo_id, newDate],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
 
 carinadb.editTodoTime = (todo_id, newTime) => {
   return new Promise((resolve, reject) => {
@@ -461,7 +474,6 @@ carinadb.editTodoTime = (todo_id, newTime) => {
     );
   });
 };
-
 
 carinadb.editTodoRecurring = (todo_id, newRecurring) => {
   return new Promise((resolve, reject) => {
