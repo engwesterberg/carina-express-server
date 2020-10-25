@@ -58,18 +58,11 @@ carinadb.todos = () => {
 
 carinadb.foruser = user_id => {
   return new Promise((resolve, reject) => {
-    pool.query(
-      `SELECT * FROM todos WHERE user_id = ? OR 
-      list_id IN (SELECT list_id FROM shared_lists WHERE shared_with=?)
-      OR list_id in (SELECT id FROM lists WHERE user_id=?)
-       ORDER BY -due_date DESC`,
-      [user_id, user_id, user_id],
-      (err, results) => {
-        if (err) return reject(err);
+    pool.query(`call getTodos(?)`, [user_id], (err, results) => {
+      if (err) return reject(err);
 
-        return resolve(results);
-      },
-    );
+      return resolve(results);
+    });
   });
 };
 

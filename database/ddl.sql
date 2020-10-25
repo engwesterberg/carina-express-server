@@ -9,7 +9,8 @@ create table users (
     email VARCHAR(124),
     fullname VARCHAR(124),
     secret VARCHAR(124),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id), 
+    UNIQUE KEY (email)
 );
 
 DROP TABLE IF EXISTS settings;
@@ -90,10 +91,10 @@ CREATE TABLE pomodoros_done (
 
 
 -- ---------------------------------------------------------------------------------------------------------------- procedures -------------------------------------------------------------------------------------------------------------------------
+select * from users;
 
 
-
-
+-- used for google (probably)
 DROP procedure IF EXISTS  addUser;
 DELIMITER //
 CREATE PROCEDURE addUser(
@@ -105,7 +106,7 @@ BEGIN
 	INSERT INTO users (user_id, email, fullname)
 SELECT * FROM  (SELECT u_id, u_email, u_name) AS tmp
 WHERE NOT EXISTS (
-    SELECT * FROM users WHERE email = u_email
+    SELECT email FROM users WHERE email = u_email
 ) LIMIT 1;
 END //
 DELIMITER ;
@@ -212,6 +213,21 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP procedure IF EXISTS  getTodos;
+DELIMITER //
+CREATE PROCEDURE getTodos(
+	IN userId INT
+)
+BEGIN
+	SELECT *, datediff(due_date, now()) as diff FROM todos WHERE user_id = userId OR 
+      list_id IN (SELECT list_id FROM shared_lists WHERE shared_with=userId)
+      OR list_id in (SELECT id FROM lists WHERE user_id=userId)
+       ORDER BY due_date asc;
+END //
+DELIMITER ;
+select * from todos where id < 10 union select * from todos where id > 10;
+call getTodos(1);
+
 DROP procedure IF EXISTS  updateTodo;
 DELIMITER //
 CREATE PROCEDURE updateTodo(
@@ -287,7 +303,6 @@ END //
 DELIMITER ;
 
 call getPomosToday(1);
-
 DROP PROCEDURE IF EXISTS createUser;
 DELIMITER //
 CREATE PROCEDURE createUser(
@@ -457,7 +472,6 @@ BEGIN
    recurring = newRecurring
  WHERE id=aTodoId;
    SELECT * FROM todos WHERE id=aTodoId;
-
 END //
 DELIMITER ;
 ;
@@ -479,5 +493,5 @@ END //
 DELIMITER ;
 ;
 
-select count((select id from todos where id=3));
+
 

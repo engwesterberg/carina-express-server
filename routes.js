@@ -99,10 +99,11 @@ router.post('/api/createuser/', async (req, res) => {
           req.body.fullname,
           encrPass,
         );
+        console.log(results);
         res.json(results);
       } catch (e) {
         console.error(e);
-        res.sendStatus(500);
+        res.status(500).send("A user with this email is already registered");
       }
     });
   });
@@ -280,7 +281,7 @@ router.post('/api/shared_list/', authenticateToken, async (req, res) => {
     res.json(results);
   } catch (e) {
     console.error(e);
-    res.sendStatus(500);
+    res.status(500).send('This email is not registered in Carina');
   }
 });
 
@@ -441,10 +442,7 @@ router.put('/api/todorecurring/', authenticateToken, async (req, res) => {
 //Update which list todo belongs in
 router.put('/api/todoslist/', authenticateToken, async (req, res) => {
   try {
-    let results = await db.editTodosList(
-      req.body.todo_id,
-      req.body.list_id,
-    );
+    let results = await db.editTodosList(req.body.todo_id, req.body.list_id);
     res.json(results);
   } catch (e) {
     console.error(e);
