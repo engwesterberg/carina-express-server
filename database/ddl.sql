@@ -385,8 +385,11 @@ CREATE PROCEDURE editTodoState(
 )
 BEGIN
 
-  UPDATE todos SET state=newState WHERE id=aTodoId;
-	SELECT * FROM todos WHERE id=aTodoId;
+UPDATE todos SET state=newState WHERE id=aTodoId;
+IF newState = 1 THEN
+	UPDATE todos SET completed=NOW() WHERE id=aTodoId;
+END IF;
+SELECT * FROM todos WHERE id=aTodoId;
 
 END //
 DELIMITER ;
@@ -413,7 +416,7 @@ CREATE PROCEDURE editTodoDate(
     IN newDate DATETIME
 )
 BEGIN
-IF (SELECT due_date from todos WHERE id=aTodoId) = null THEN
+IF (SELECT due_date from todos WHERE id=aTodoId) is null THEN
 	UPDATE todos SET due_date=newDate WHERE id=aTodoId;
 ELSE
   UPDATE todos SET due_date=due_date + INTERVAL DATEDIFF(newDate, due_date) DAY

@@ -55,3 +55,9 @@ select * from users;
 call editTodoRecurring(1, 20);
 select * from users;
 select * from todos;
+call editTodoDate(23, now());
+
+select * from lists;
+
+-- Study japanese fungerar
+-- Study math fungerar inte
