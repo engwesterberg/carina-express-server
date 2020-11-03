@@ -4,7 +4,7 @@ Api for Carina
 npm install
 ```
 
-Execute ddl.sql in your MySql instance to setup the database. Insert dummy data by executing insert.sql (not required).
+Execute ddl.sql in your MySql instance to setup the database. Insert dummy data by executing insert.sql (not required). Lets go.
 
 To start the server run:
 ```bash
