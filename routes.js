@@ -450,4 +450,31 @@ router.put('/api/todoslist/', authenticateToken, async (req, res) => {
   }
 });
 
+router.post('/api/beginresetpassword/',  async (req, res) => {
+  try {
+    let results = await db.beginResetPassword(req.body.email);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put('/api/confirmresetpassword/',  async (req, res) => {
+  let encrPass;
+  bcrypt.genSalt(10, async function (err, salt) {
+    bcrypt.hash(req.body.new_password, 10, async function (err, hash) {
+      encrPass = hash;
+      try {
+        let results = await db.confirmResetPassword(req.body.email, req.body.confirmation_code, encrPass);
+        res.json(results);
+      } 
+      catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+      }
+    });
+  });
+});
+
 module.exports = router;

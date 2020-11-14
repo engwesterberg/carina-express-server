@@ -1,4 +1,7 @@
 const mysql = require('mysql');
+const randomstring = require("randomstring");
+
+
 require('dotenv').config();
 
 const pool =
@@ -6,8 +9,8 @@ const pool =
     ? mysql.createPool({
         connectionLimit: 10,
         host: '35.228.149.81',
-        user: 'erik',
-        password: 'harrot92',
+        user: 'root',
+        password: 'rootpass',
         database: 'carina',
         port: 3306,
       })
@@ -487,6 +490,35 @@ carinadb.editTodosList = (todo_id, list_id) => {
     pool.query(
       `CALL editTodosList(?, ?)`,
       [todo_id, list_id],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.beginResetPassword = (email) => {
+  let confirmationCode = randomstring.generate(16);
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL beginResetPassword(?, ?)`,
+      [email, confirmationCode],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
+
+carinadb.confirmResetPassword = (email, confirmationCode, newPassword) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL confirmResetPassword(?, ?, ?)`,
+      [email, confirmationCode, newPassword],
       (err, results) => {
         if (err) return reject(err);
 

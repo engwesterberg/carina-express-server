@@ -1,7 +1,7 @@
 drop database if exists carina;
 create database carina;
 use carina;
-
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'rootpass';	
 drop table if exists users;
 create table users (
 	id int NOT NULL AUTO_INCREMENT,
@@ -85,6 +85,17 @@ CREATE TABLE pomodoros_done (
     PRIMARY KEY (id), 
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (todo_id) REFERENCES todos(id)
+);
+
+DROP TABLE IF EXISTS password_resets;
+CREATE TABLE password_resets (
+	id INT NOT NULL AUTO_INCREMENT, 
+    state INT NOT NULL,
+    user_id INT NOT NULL,
+    confirmation_code VARCHAR(16),
+    updated DATETIME,
+	PRIMARY KEY (id), 
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 
@@ -492,6 +503,34 @@ BEGIN
 END //
 DELIMITER ;
 ;
+
+DROP PROCEDURE IF EXISTS beginResetPassword;
+DELIMITER //
+CREATE PROCEDURE beginResetPassword(
+    IN aEmail VARCHAR(64),
+    IN aConfirmationCode VARCHAR(16)
+)
+BEGIN
+  INSERT INTO password_resets (state ,user_id, confirmation_code)
+  VALUES (0, (SELECT id FROM users WHERE email=aEmail), aConfirmationCode);
+END //
+DELIMITER ;
+;
+
+DROP PROCEDURE IF EXISTS confirmResetPassword;
+DELIMITER //
+CREATE PROCEDURE confirmResetPassword(
+    IN aEmail VARCHAR(64),
+    IN aConfirmationCode VARCHAR(16),
+    IN aNewPassword VARCHAR(124)
+)
+BEGIN
+IF (SELECT confirmation_code FROM password_resets WHERE user_id=(SELECT id FROM users WHERE email=aEmail) AND state=0) = aConfirmationCode THEN
+	UPDATE users SET secret=aNewPassword WHERE email=aEmail;
+    UPDATE password_resets SET state=1 WHERE user_id=(SELECT id FROM users WHERE email=aEmail);
+END IF;
+END //
+DELIMITER ;
 
 
 
