@@ -1,7 +1,7 @@
 drop database if exists carina;
 create database carina;
 use carina;
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'rootpass';	
+ALTER USER 'mreriken'@'localhost' IDENTIFIED WITH mysql_native_password BY 'p7<XHeVc&JP/,\rJ';	
 drop table if exists users;
 create table users (
 	id int NOT NULL AUTO_INCREMENT,
