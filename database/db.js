@@ -1,6 +1,4 @@
 const mysql = require('mysql');
-const randomstring = require("randomstring");
-
 
 require('dotenv').config();
 
@@ -83,9 +81,9 @@ carinadb.fromlist = (user_id, list_id) => {
   });
 };
 //For google user
-carinadb.adduser = (id, email, name) => {
+carinadb.adduser = (id, email, name, secret) => {
   return new Promise((resolve, reject) => {
-    pool.query(`call addUser(?, ?, ?)`, [id, email, name], (err, results) => {
+    pool.query(`call addUser(?, ?, ?, ?)`, [id, email, name, secret], (err, results) => {
       if (err) return reject(err);
 
       return resolve(results);
@@ -499,8 +497,7 @@ carinadb.editTodosList = (todo_id, list_id) => {
   });
 };
 
-carinadb.beginResetPassword = (email) => {
-  let confirmationCode = randomstring.generate(16);
+carinadb.beginResetPassword = (email, confirmationCode) => {
   return new Promise((resolve, reject) => {
     pool.query(
       `CALL beginResetPassword(?, ?)`,

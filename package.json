@@ -27,6 +27,7 @@
     "mysql": "^2.18.1",
     "node": "^14.4.0",
     "node-cron": "^2.0.3",
+    "nodemailer": "^6.4.16",
     "randomstring": "^1.1.5",
     "supertest": "^4.0.2",
     "tape": "^5.0.1"

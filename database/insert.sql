@@ -1,6 +1,6 @@
 use carina;
 
-call createUser(null, 'erikwesterberg@gmail.com', 'Erik', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
+call createUser(null, 'erikwesterberg92@gmail.com', 'Erik', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
 call createUser(null, 'lovechorina@gmail.com', 'Rina', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
 call createUser(null, 'erik@gmail.com', 'Erik', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
 call createUser(null, 'root@gmail.com', 'Root', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
@@ -45,3 +45,5 @@ call addSubTask(1, 'Spelling');
 call getSubTasks(1);
 call deleteSubTask(1);
 call getTodos(1);
+select * from users;
+select * from password_resets;

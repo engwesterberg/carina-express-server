@@ -99,26 +99,27 @@ CREATE TABLE password_resets (
 );
 
 
-
-
--- ---------------------------------------------------------------------------------------------------------------- procedures -------------------------------------------------------------------------------------------------------------------------
 select * from users;
 
-
--- used for google (probably)
+-- ---------------------------------------------------------------------------------------------------------------- procedures -------------------------------------------------------------------------------------------------------------------------
+-- used for google 
 DROP procedure IF EXISTS  addUser;
 DELIMITER //
 CREATE PROCEDURE addUser(
 	IN u_id VARCHAR(124),
     IN u_email VARCHAR(124),
-    IN u_name VARCHAR(124)
+    IN u_name VARCHAR(124),
+    IN aSecret VARCHAR(124)
 )
 BEGIN
-	INSERT INTO users (user_id, email, fullname)
-SELECT * FROM  (SELECT u_id, u_email, u_name) AS tmp
+	INSERT INTO users (user_id, email, fullname, secret)
+SELECT * FROM  (SELECT u_id, u_email, u_name, aSecret) AS tmp
 WHERE NOT EXISTS (
     SELECT email FROM users WHERE email = u_email
 ) LIMIT 1;
+IF (SELECT id FROM users WHERE email=u_email) IS NOT NULL THEN
+	UPDATE users SET user_id=u_id WHERE email=u_email;
+END IF;
 END //
 DELIMITER ;
 
@@ -511,8 +512,9 @@ CREATE PROCEDURE beginResetPassword(
     IN aConfirmationCode VARCHAR(16)
 )
 BEGIN
-  INSERT INTO password_resets (state ,user_id, confirmation_code)
-  VALUES (0, (SELECT id FROM users WHERE email=aEmail), aConfirmationCode);
+	DELETE FROM password_resets WHERE user_id=(SELECT id FROM users WHERE email=aEmail) AND state=0;
+	INSERT INTO password_resets (state ,user_id, confirmation_code)
+	VALUES (0, (SELECT id FROM users WHERE email=aEmail), aConfirmationCode);
 END //
 DELIMITER ;
 ;
