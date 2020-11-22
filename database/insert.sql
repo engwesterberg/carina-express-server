@@ -9,7 +9,7 @@ INSERT INTO lists (user_id, title)
 VALUES  (1, 'Rinas Tasks'), 
 (1, 'Study list'), 
 (2, 'Hair Salon') ;
-
+select * from todos where due_date is not null AND state=0;
 -- no date
 call addTodo(1, null, 'Boymakutt', 'For 1 hour',null, false, 2,0);
 call addTodo(1, null, 'Slavmopp', 'For 1 hour',NULL, false, 2,0);

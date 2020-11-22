@@ -8,7 +8,7 @@ const pool =
         connectionLimit: 10,
         host: '35.228.149.81',
         user: 'root',
-        password: 'p7<XHeVc&JP/,\rJ',
+        password: "pass",
         database: 'carina',
         port: 3306,
       })
