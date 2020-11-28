@@ -2,17 +2,7 @@ const mysql = require('mysql');
 
 require('dotenv').config();
 
-const pool =
-  process.env.NODE_ENV === 'production'
-    ? mysql.createPool({
-        connectionLimit: 10,
-        host: '35.228.149.81',
-        user: 'root',
-        password: "pass",
-        database: 'carina',
-        port: 3306,
-      })
-    : mysql.createPool({
+const pool = mysql.createPool({
         connectionLimit: process.env.DB_CONNECTION_LIMIT,
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -20,16 +10,6 @@ const pool =
         database: process.env.DB_DATABASE_NAME,
         port: process.env.DB_PORT,
       });
-
-//timezone: 'UTC-4',
-// const pool = mysql.createPool({
-//   connectionLimit: 10,
-//   host: 'eu-cdbr-west-03.cleardb.net',
-//   user: 'b84860968eff20',
-//   password: 'a635563c',
-//   database: 'heroku_48d7691d0265476',
-//   port: 3306,
-// });
 
 let carinadb = {};
 
