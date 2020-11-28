@@ -225,8 +225,7 @@ carinadb.getLists = user_id => {
 carinadb.createList = (user_id, title) => {
   return new Promise((resolve, reject) => {
     pool.query(
-      `INSERT INTO lists (user_id, title)
-    VALUES (?, ?)`,
+      `call addList(?, ?)`,
       [user_id, title],
       (err, results) => {
         if (err) return reject(err);

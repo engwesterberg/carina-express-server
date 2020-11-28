@@ -225,6 +225,20 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP procedure IF EXISTS  addList;
+DELIMITER //
+CREATE PROCEDURE addList(
+	IN aUserId INT, 
+    IN aTitle VARCHAR(64)
+)
+BEGIN
+	INSERT INTO lists (user_id, title)
+        VALUES (aUserId, aTitle);
+        SELECT * FROM lists WHERE user_id=aUserId ORDER BY id DESC LIMIT 1;
+END //
+DELIMITER ;
+
+
 DROP procedure IF EXISTS  getTodos;
 DELIMITER //
 CREATE PROCEDURE getTodos(

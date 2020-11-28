@@ -47,3 +47,4 @@ call deleteSubTask(1);
 call getTodos(1);
 select * from users;
 select * from password_resets;
+select * from todos;
