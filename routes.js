@@ -152,17 +152,16 @@ router.post("/api/signin/", async (req, res) => {
 });
 
 router.post("/api/todo/", authenticateToken, async (req, res) => {
-  let parsed = carinaParser(req.body.query);
   try {
     let results = await db.addTodo(
       req.body.user_id,
       req.body.list_id,
-      parsed.newQuery,
+      req.body.title,
       null,
-      parsed.due_date && dbDate(moment(parsed.due_date)),
-      parsed.hasTime,
-      parsed.pomo_estimate,
-      parsed.recurring
+      req.body.due_date && dbDate(moment(req.body.due_date)),
+      req.body.has_time,
+      req.body.pomo_estimate,
+      req.body.recurring
     );
     res.json(results);
   } catch (e) {
