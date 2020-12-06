@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const moment = require("moment");
@@ -7,7 +7,6 @@ const randomstring = require("randomstring");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 const db = require("./database/db");
-const carinaParser = require("./CarinaParser");
 const dbFormat = "YYYY-MM-DD HH:mm:ss";
 
 //Authenticate a users token
@@ -114,8 +113,8 @@ router.post("/api/user/", async (req, res) => {
 //user signing up with email
 router.post("/api/createuser/", async (req, res) => {
   let encrPass;
-  bcrypt.genSalt(10, async function (err, salt) {
-    bcrypt.hash(req.body.secret, 10, async function (err, hash) {
+  bcrypt.genSalt(saltRounds, async function (err, salt) {
+    bcrypt.hash(req.body.secret, saltRounds, async function (err, hash) {
       encrPass = hash;
       try {
         let results = await db.createuser(
@@ -488,8 +487,8 @@ router.put(
   "/api/confirmresetpassword/",
   async (req, res) => {
     let encrPass;
-    bcrypt.genSalt(10, async function (err, salt) {
-      bcrypt.hash(req.body.new_password, 10, async function (err, hash) {
+    bcrypt.genSalt(saltRounds, async function (err, salt) {
+      bcrypt.hash(req.body.new_password, saltRounds, async function (err, hash) {
         encrPass = hash;
         try {
           let results = await db.confirmResetPassword(
