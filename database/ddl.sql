@@ -547,6 +547,3 @@ IF (SELECT confirmation_code FROM password_resets WHERE user_id=(SELECT id FROM 
 END IF;
 END //
 DELIMITER ;
-
-
-

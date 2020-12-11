@@ -55,8 +55,9 @@ call shareList(1, 'alex@gmail.com', 1);
 call shareList(1, 'tom@gmail.com', 1);
 call shareList(1, 'robin@gmail.com', 1);
 
-call addSubTask(1, 'Reserve plane tickets');
-call addSubTask(1, 'Reserve hotel');
+call addSubTask(2, 'Reserve plane tickets');
+call addSubTask(2, 'Reserve hotel');
 call addSubTask(1, 'Plan each day');
 call getSubTasks(1);
 call getTodos(1);
+
