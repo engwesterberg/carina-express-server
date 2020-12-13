@@ -547,3 +547,36 @@ IF (SELECT confirmation_code FROM password_resets WHERE user_id=(SELECT id FROM 
 END IF;
 END //
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS completeTodo;
+DELIMITER //
+CREATE PROCEDURE completeTodo(
+    todo_id INTEGER
+)
+BEGIN
+DECLARE newdate datetime;
+SELECT 
+	user_id, list_id, title, note,due_date, has_time, pomo_estimate, pomo_done, priority, state, recurring 
+INTO
+	@userid, @listid, @title, @note, @duedate, @hastime, @pomoestimate, @pomodone, @priority, @state, @recurring 
+FROM
+	todos
+WHERE
+	id=todo_id;
+SET newdate = NOW() + INTERVAL 1 DAY;
+CALL editTodoState(todo_id, 1);
+IF @recurring > 0 THEN
+	IF @recurring = 30 THEN
+		SET newdate = @duedate + INTERVAL 1 MONTH;
+	ELSEIF @recurring = 365 THEN
+		SET newdate = @duedate + INTERVAL 1 YEAR;
+	ELSE 
+		SET newdate = @duedate + INTERVAL @recurring DAY;
+	END IF;
+	CALL addTodo(@userid, @listid, @title, @note, newdate, @hastime, @pomoestimate, @recurring);
+END IF;
+END //
+DELIMITER ;
+select * from todos;
+call completeTodo(59);
+
