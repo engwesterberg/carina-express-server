@@ -581,7 +581,6 @@ IF @recurring is not null THEN
 	SET newtodoid = addTodoAndReturnId(@userid, @listid, @title, @note, newdate, @hastime, @pomoestimate, @recurring);
     IF newtodoid IS NOT NULL THEN
 		INSERT INTO sub_tasks (state, todo_id, title) select 0 as state, newtodoid as todo_id, title from sub_tasks where todo_id=aTodoId;
-        -- UPDATE sub_tasks SET state=0 WHERE todo_id=newtodoid;
 	END IF;
     COMMIT;
 END IF;
