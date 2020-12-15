@@ -1,5 +1,7 @@
 drop database if exists carina;
 create database carina;
+SET GLOBAL log_bin_trust_function_creators = 1;
+
 use carina;
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'rootpass';	
 drop table if exists users;
@@ -551,10 +553,13 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS completeTodo;
 DELIMITER //
 CREATE PROCEDURE completeTodo(
-    todo_id INTEGER
+    aTodoId INTEGER
 )
 BEGIN
 DECLARE newdate datetime;
+DECLARE newtodoid INT;
+DECLARE nrOfSubtasks INT;
+
 SELECT 
 	user_id, list_id, title, note,due_date, has_time, pomo_estimate, pomo_done, priority, state, recurring 
 INTO
@@ -562,10 +567,10 @@ INTO
 FROM
 	todos
 WHERE
-	id=todo_id;
+	id=aTodoId;
 SET newdate = NOW() + INTERVAL 1 DAY;
-CALL editTodoState(todo_id, 1);
-IF @recurring > 0 THEN
+CALL editTodoState(aTodoId, 1);
+IF @recurring is not null THEN
 	IF @recurring = 30 THEN
 		SET newdate = @duedate + INTERVAL 1 MONTH;
 	ELSEIF @recurring = 365 THEN
@@ -573,10 +578,35 @@ IF @recurring > 0 THEN
 	ELSE 
 		SET newdate = @duedate + INTERVAL @recurring DAY;
 	END IF;
-	CALL addTodo(@userid, @listid, @title, @note, newdate, @hastime, @pomoestimate, @recurring);
+	SET newtodoid = addTodoAndReturnId(@userid, @listid, @title, @note, newdate, @hastime, @pomoestimate, @recurring);
+    IF newtodoid IS NOT NULL THEN
+		INSERT INTO sub_tasks (state, todo_id, title) select 0 as state, newtodoid as todo_id, title from sub_tasks where todo_id=aTodoId;
+        -- UPDATE sub_tasks SET state=0 WHERE todo_id=newtodoid;
+	END IF;
+    COMMIT;
 END IF;
 END //
 DELIMITER ;
-select * from todos;
-call completeTodo(59);
 
+
+DROP FUNCTION IF EXISTS addTodoAndReturnId;
+DELIMITER //
+CREATE FUNCTION addTodoAndReturnId (
+	userId INT, 
+	listId INT, 
+	todo_title VARCHAR(64), 
+	pNote VARCHAR(1024),
+	dueDate DATETIME, 
+	hasTime BOOL, 
+	pomoEstimate INT,
+	recurr INT
+)
+RETURNS INT
+BEGIN
+DECLARE LastTodoId INT;
+   INSERT INTO todos (user_id, list_id, title, note, due_date, has_time, pomo_estimate, state, pomo_done, recurring)
+        VALUES (userId, listId, todo_title,pNote, dueDate, hasTime,pomoEstimate, 0, 0, recurr);
+		SET LastTodoId = (SELECT id FROM todos WHERE user_id=userId ORDER BY id DESC LIMIT 1);
+        RETURN LastTodoId;
+END //
+DELIMITER ;

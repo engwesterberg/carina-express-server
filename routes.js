@@ -393,6 +393,15 @@ router.put("/api/todostate/", authenticateToken, async (req, res) => {
     res.sendStatus(500);
   }
 });
+router.put("/api/completetodo/", authenticateToken, async (req, res) => {
+  try {
+    let results = await db.completeTodo(req.body.todo_id);
+    res.json(results);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
 
 router.put("/api/todotitle/", authenticateToken, async (req, res) => {
   try {

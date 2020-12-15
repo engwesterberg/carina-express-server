@@ -391,6 +391,19 @@ carinadb.updateTodoState = (todo_id, newState) => {
     );
   });
 };
+carinadb.completeTodo = (todo_id) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `CALL completeTodo(?)`,
+      [todo_id],
+      (err, results) => {
+        if (err) return reject(err);
+
+        return resolve(results);
+      },
+    );
+  });
+};
 
 carinadb.updateTodoNote = (todo_id, newNote) => {
   return new Promise((resolve, reject) => {
