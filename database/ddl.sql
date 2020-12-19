@@ -101,8 +101,6 @@ CREATE TABLE password_resets (
 );
 
 
-select * from users;
-
 -- ---------------------------------------------------------------------------------------------------------------- procedures -------------------------------------------------------------------------------------------------------------------------
 -- used for google 
 DROP procedure IF EXISTS  addUser;
@@ -430,10 +428,11 @@ BEGIN
 
 UPDATE todos SET state=newState WHERE id=aTodoId;
 IF newState = 1 THEN
-	UPDATE todos SET completed=NOW() WHERE id=aTodoId;
+	UPDATE todos SET completed=current_timestamp() WHERE id=aTodoId;
+ELSEIF NEWSTATE = 0 THEN
+	UPDATE todos SET completed=null WHERE id=aTodoId;
 END IF;
 SELECT * FROM todos WHERE id=aTodoId;
-
 END //
 DELIMITER ;
 ;

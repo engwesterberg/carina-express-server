@@ -61,7 +61,5 @@ call addSubTask(2, 'Buy aquarium tickets');
 call addSubTask(2, 'Reserve hotel');
 call addSubTask(1, 'Plan each day');
 call getSubTasks(1);
-call getTodos(1);
-
-
+call getTodos(1)
  
