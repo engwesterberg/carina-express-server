@@ -37,9 +37,9 @@ carinadb.todos = () => {
   });
 };
 
-carinadb.foruser = user_id => {
+carinadb.foruser = (user_id, getDone) => {
   return new Promise((resolve, reject) => {
-    pool.query(`call getTodos(?)`, [user_id], (err, results) => {
+    pool.query(`call getTodos(?, ?)`, [user_id, getDone], (err, results) => {
       if (err) return reject(err);
 
       return resolve(results);

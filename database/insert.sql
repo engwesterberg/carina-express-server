@@ -7,7 +7,7 @@ call createUser(null, 'erik@gmail.com', 'Jacob', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZ
 call createUser(null, 'tina@gmail.com', 'Simon', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
 call createUser(null, 'alex@gmail.com', 'Navid', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
 call createUser(null, 'tom@gmail.com', 'Anton', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
-call createUser(null, 'robin@gmail.com', 'Zayumi', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
+call createUser(null, 'zayumi@gmail.com', 'Zayumi', '$2b$10$7Oa5XIMnrORZmdvzTWigDeZgxLsNkutzBfGPuiQT09LwOSDNLbpu.');
 
 INSERT INTO lists (user_id, title) 
 VALUES  (1, 'Group Project'), 
