@@ -242,21 +242,31 @@ DELIMITER ;
 DROP procedure IF EXISTS getTodos;
 DELIMITER //
 CREATE PROCEDURE getTodos(
-	IN userId INT
+	IN userId INT,
+    IN getDone BOOL
 )
 BEGIN
-	SELECT *, datediff(due_date, now()) as diff FROM todos WHERE user_id = userId OR 
-      list_id IN (SELECT list_id FROM shared_lists WHERE shared_with=userId)
-      OR list_id in (SELECT id FROM lists WHERE user_id=userId)
+IF getDone=FALSE THEN
+	SELECT *, datediff(due_date, now()) as diff FROM todos WHERE user_id = userId AND state!=1 OR 
+      list_id IN (SELECT list_id FROM shared_lists WHERE shared_with=userId) AND state!=1
+      OR list_id in (SELECT id FROM lists WHERE user_id=userId) AND state!=1
        ORDER BY
 		state ASC,
 		CASE WHEN due_date is not null AND state=0 THEN due_date END ASC,
-		CASE WHEN state=1 THEN completed END ASC,
+		CASE WHEN state=1 THEN completed END DESC,
 		CASE WHEN state=0 THEN created END ASC;
+	ELSE 
+		SELECT *, datediff(due_date, now()) as diff FROM todos WHERE user_id = userId OR 
+		  list_id IN (SELECT list_id FROM shared_lists WHERE shared_with=userId)
+		  OR list_id in (SELECT id FROM lists WHERE user_id=userId)
+		   ORDER BY
+			state ASC,
+			CASE WHEN due_date is not null AND state=0 THEN due_date END ASC,
+			CASE WHEN state=1 THEN completed END DESC,
+			CASE WHEN state=0 THEN created END ASC;
+	END IF;
 END //
 DELIMITER ;
-select * from todos where id < 10 union select * from todos where id > 10;
-call getTodos(1);
 
 DROP procedure IF EXISTS  updateTodo;
 DELIMITER //

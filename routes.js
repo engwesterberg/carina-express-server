@@ -80,7 +80,6 @@ router.get("/api/id/:user_id", async (req, res) => {
 });
 
 router.get("/api/todos/:id/:getdone", authenticateToken, async (req, res) => {
-  console.log("justdoit: ", req.params);
   try {
     let getDone = req.params.getdone === 'true' ? true : false;
     let results = await db.foruser(req.params.id, getDone);
