@@ -47,8 +47,9 @@ const emailHandler = {
 };
 
 //Generate a token for user
-const generateAccessToken = (username) => {
-  return jwt.sign(username, process.env.ACCESS_TOKEN_SECRET, {
+const generateAccessToken = (id) => {
+  let payload = {"id": id};
+  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "30d",
   });
 };
@@ -70,11 +71,10 @@ router.get("/api/apitest", (req, res) => {
 router.get("/api/id/:user_id", async (req, res) => {
   try {
     let results = await db.userid(req.params.user_id);
-    const token = generateAccessToken({ user_id: req.params.user_id });
+    const token = generateAccessToken(req.params.user_id);
     res.json({ result: results, token: token });
   } catch (e) {
     console.error(e);
-
     res.sendStatus(500);
   }
 });
@@ -133,6 +133,7 @@ router.post("/api/createuser/", async (req, res) => {
   });
 });
 
+//Normal sign in
 router.post("/api/signin/", async (req, res) => {
   try {
     let results = await db.signin(req.body.email);
@@ -141,7 +142,10 @@ router.post("/api/signin/", async (req, res) => {
       result
     ) {
       if (result) {
-        const token = generateAccessToken({ email: req.body.email });
+        let id = results[0][0].id;
+        const token = generateAccessToken(id);
+        let decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        console.log("decoded: ", decoded);
         res.json({ userInfo: results, token: token });
       } else res.sendStatus(500);
     });

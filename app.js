@@ -4,7 +4,13 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const indexRouter = require('./routes');
 const bodyParser = require('body-parser');
-const cron = require('node-cron');
+//const cron = require('node-cron');
+const rateLimit = require("express-rate-limit");
+
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100 // limit each IP to 100 requests per windowMs
+});
 
 var app = express();
 app.use(logger('dev'));
@@ -14,17 +20,10 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(limiter);
 
 app.use('/', indexRouter);
 console.log('process env:', process.env.ACCESS_TOKEN_SECRET);
-if (process.env.NODE_ENV === 'production') {
-  // Serve any static files
-  app.use(express.static(path.join(__dirname, 'client/build')));
-  // Handle React routing, return all requests to React app
-  app.get('*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-  });
-}
 
 //cron.schedule("* * * * *", function() {
 //    console.log("running a task every minute");
