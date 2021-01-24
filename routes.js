@@ -16,10 +16,10 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
   if (token == null) return res.sendStatus(401); // if there isn't any token
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
     console.log(err);
     if (err) return res.sendStatus(403);
-    req.user = user;
+    res.userId = data.id;
     next(); 
   });
 };
@@ -71,7 +71,8 @@ router.get("/api/apitest", (req, res) => {
 router.get("/api/id/:user_id", async (req, res) => {
   try {
     let results = await db.userid(req.params.user_id);
-    const token = generateAccessToken(req.params.user_id);
+    let id = results[0].id;
+    const token = generateAccessToken(id);
     res.json({ result: results, token: token });
   } catch (e) {
     console.error(e);
@@ -79,10 +80,10 @@ router.get("/api/id/:user_id", async (req, res) => {
   }
 });
 
-router.get("/api/todos/:id/:getdone", authenticateToken, async (req, res) => {
+router.get("/api/todos/:getdone", authenticateToken, async (req, res) => {
   try {
     let getDone = req.params.getdone === 'true' ? true : false;
-    let results = await db.foruser(req.params.id, getDone);
+    let results = await db.foruser(res.userId, getDone);
     res.json(results);
   } catch (e) {
     console.error(e);
@@ -92,7 +93,7 @@ router.get("/api/todos/:id/:getdone", authenticateToken, async (req, res) => {
 
 router.get("/api/todosfromlist/", authenticateToken, async (req, res) => {
   try {
-    let results = await db.fromlist(req.body.user_id, req.body.list_id);
+    let results = await db.fromlist(res.userId, req.body.list_id);
     res.json(results);
   } catch (e) {
     console.error(e);
@@ -143,9 +144,8 @@ router.post("/api/signin/", async (req, res) => {
     ) {
       if (result) {
         let id = results[0][0].id;
+        console.log("check: ", id);
         const token = generateAccessToken(id);
-        let decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        console.log("decoded: ", decoded);
         res.json({ userInfo: results, token: token });
       } else res.sendStatus(500);
     });
@@ -158,7 +158,7 @@ router.post("/api/signin/", async (req, res) => {
 router.post("/api/todo/", authenticateToken, async (req, res) => {
   try {
     let results = await db.addTodo(
-      req.body.user_id,
+      res.userId,
       req.body.list_id,
       req.body.title,
       null,
@@ -220,7 +220,7 @@ router.get("/api/subtask/:todo_id", authenticateToken, async (req, res) => {
 router.post("/api/todocopy/", authenticateToken, async (req, res) => {
   try {
     let results = await db.addTodo(
-      req.body.user_id,
+      res.userId,
       req.body.list_id,
       req.body.title,
       req.body.note,
@@ -258,9 +258,9 @@ router.put("/api/todo/", authenticateToken, async (req, res) => {
 });
 
 // ---------------------------------------
-router.get("/api/list/:user_id", authenticateToken, async (req, res) => {
+router.get("/api/list/", authenticateToken, async (req, res) => {
   try {
-    let results = await db.getLists(req.params.user_id);
+    let results = await db.getLists(res.userId);
     res.json(results);
   } catch (e) {
     console.error(e);
@@ -280,7 +280,7 @@ router.get("/api/sharedwith/:list_id", authenticateToken, async (req, res) => {
 
 router.post("/api/list/", authenticateToken, async (req, res) => {
   try {
-    let results = await db.createList(req.body.user_id, req.body.title);
+    let results = await db.createList(res.userId, req.body.title);
     res.json(results);
   } catch (e) {
     console.error(e);
@@ -348,7 +348,7 @@ router.delete("/api/list/:list_id", authenticateToken, async (req, res) => {
 
 router.put("/api/incpomo/", authenticateToken, async (req, res) => {
   try {
-    let results = await db.incPomo(req.body.user_id, req.body.todo_id);
+    let results = await db.incPomo(res.userId, req.body.todo_id);
     res.json(results);
   } catch (e) {
     console.error(e);
@@ -358,7 +358,7 @@ router.put("/api/incpomo/", authenticateToken, async (req, res) => {
 
 router.put("/api/pomotoday/:user_id", authenticateToken, async (req, res) => {
   try {
-    let results = await db.getPomosToday(req.params.user_id);
+    let results = await db.getPomosToday(res.userId);
     res.json(results);
   } catch (e) {
     console.error(e);
@@ -377,11 +377,11 @@ router.delete("/api/todo/:todo_id", authenticateToken, async (req, res) => {
 });
 
 router.delete(
-  "/api/emptytrash/:user_id",
+  "/api/emptytrash/",
   authenticateToken,
   async (req, res) => {
     try {
-      let results = await db.emptyTrash(req.params.user_id);
+      let results = await db.emptyTrash(res.userId);
       res.json(results);
     } catch (e) {
       console.error(e);

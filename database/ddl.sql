@@ -11,6 +11,7 @@ create table users (
     email VARCHAR(124),
     fullname VARCHAR(124),
     secret VARCHAR(124),
+    registered DATETIME DEFAULT CURRENT_TIMESTAMP, 
     PRIMARY KEY (id), 
     UNIQUE KEY (email)
 );

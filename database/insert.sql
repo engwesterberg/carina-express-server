@@ -41,7 +41,6 @@ call addTodo(1, null, 'Submit Homework', null,NOW() + INTERVAL 1 DAY, false, 2,0
 call addTodo(1, null, 'Study Japanese', null,NOW()+1, false, 10,0);
 call addTodo(1, null, 'Prepare Christmas Gifts', null,'2020-12-20 20:00:00', true, 10,0);
 
-
 -- list todos
 call addTodo(1, 1, 'Update Proposal', null,NOW() + interval 10 day, false, 2,0);
 call addTodo(1, 1, 'Evaluate if React meets the requirements', null,NOW() + interval 1 day, false, 2,0);
@@ -60,11 +59,3 @@ call addSubTask(2, 'Reserve hotel');
 call addSubTask(2, 'Buy aquarium tickets');
 call addSubTask(2, 'Reserve hotel');
 call addSubTask(1, 'Plan each day');
-call getSubTasks(1);
-call getTodos(1);
- select * from todos where user_id=1 order by state=0;
- select * from todos where user_id=1 ORDER BY
-  state ASC,
-  CASE WHEN due_date is not null AND state=0 THEN due_date END ASC,
-  CASE WHEN state=1 THEN completed END ASC,
-  CASE WHEN state=0 THEN created END ASC
